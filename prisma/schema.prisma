@@ -1,0 +1,170 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  netId         String   @unique
+  email         String   @unique
+  name          String
+  phoneNumber   String?
+  createdAt     DateTime @default(now())
+
+  // Stats
+  totalCheckouts Int     @default(0)
+  totalReturns   Int     @default(0)
+  onTimeReturns  Int     @default(0)
+  lateReturns    Int     @default(0)
+  currentStreak  Int     @default(0)
+  longestStreak  Int     @default(0)
+  points         Int     @default(0)
+
+  // Relationships
+  checkouts     Checkout[]
+  notifications Notification[]
+  achievements  UserAchievement[]
+
+  @@index([netId])
+}
+
+model Container {
+  id               String    @id // Format: DU-YYYY-NNN
+  rfidTag          String    @unique
+  status           String    @default("available") // available, checked_out, washing, maintenance
+  totalUses        Int       @default(0)
+  lastWashDate     DateTime?
+  manufacturedDate DateTime
+  retiredDate      DateTime?
+
+  // Location tracking
+  currentLocation  String    @default("Broadhead") // Broadhead, WU, Marketplace, etc.
+
+  // Relationships
+  checkouts        Checkout[]
+
+  @@index([status])
+  @@index([currentLocation])
+}
+
+model Checkout {
+  id               String    @id @default(cuid())
+
+  // References
+  userId           String
+  user             User      @relation(fields: [userId], references: [id])
+  containerId      String?
+  container        Container? @relation(fields: [containerId], references: [id])
+
+  // Pickup details
+  pickupLocation   String    // "Broadhead", "WU", etc.
+  pickupZone       String    // "A", "B", "C", "D"
+  pickupTimeSlot   DateTime  // Reserved time
+  actualPickupTime DateTime?
+
+  // Return details
+  expectedReturnDate DateTime // 24 hours after pickup
+  actualReturnDate   DateTime?
+  returnLocation     String?
+
+  // Status
+  status           String    @default("reserved") // reserved, picked_up, returned, overdue, cancelled
+  isLate           Boolean   @default(false)
+
+  // Notifications
+  remindersSent    Int       @default(0)
+
+  createdAt        DateTime  @default(now())
+
+  @@index([userId])
+  @@index([containerId])
+  @@index([status])
+  @@index([pickupTimeSlot])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  type      String   // "pickup_reminder", "return_reminder", "overdue", "achievement"
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
+}
+
+model DiningLocation {
+  id               String   @id @default(cuid())
+  name             String   @unique // "Broadhead", "West Union", "Marketplace"
+  shortName        String   // "BH", "WU", "MP"
+  address          String
+  isActive         Boolean  @default(true)
+
+  // Inventory
+  totalContainers  Int      @default(0)
+  availableNow     Int      @default(0)
+
+  // Time slots configuration
+  openTime         String   // "07:00"
+  closeTime        String   // "21:00"
+  slotDuration     Int      @default(15) // minutes
+  slotsPerZone     Int      @default(20) // max per time slot per zone
+
+  createdAt        DateTime @default(now())
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  icon        String   // emoji or icon name
+  points      Int
+  requirement String   // "5_checkouts", "10_streak", etc.
+  threshold   Int      @default(1) // numeric threshold for the requirement
+
+  // Badge visual
+  badgeColor  String   @default("#00539B")
+
+  // Relationships
+  users       UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  unlockedAt    DateTime @default(now())
+
+  @@unique([userId, achievementId])
+}
+
+model SystemStats {
+  id               String   @id @default(cuid())
+  date             DateTime @unique @default(now())
+
+  // Daily metrics
+  totalCheckouts   Int      @default(0)
+  totalReturns     Int      @default(0)
+  onTimeReturns    Int      @default(0)
+  lateReturns      Int      @default(0)
+
+  // Environmental impact
+  disposablesSaved Int      @default(0)
+  co2Saved         Float    @default(0) // kg
+  waterSaved       Float    @default(0) // liters
+
+  @@index([date])
+}
