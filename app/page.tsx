@@ -9,8 +9,6 @@ import Image from 'next/image'
 interface ContainerInfo {
   id: string
   status: string
-  daysOut: number
-  dueIn: number
 }
 
 interface ScanResultData {
@@ -144,9 +142,7 @@ export default function DukeReuseApp() {
   // Current container status
   const [currentContainer, setCurrentContainer] = useState<ContainerInfo | null>({
     id: DEMO_CONTAINER_ID,
-    status: 'checked_out',
-    daysOut: 2,
-    dueIn: 5
+    status: 'checked_out'
   })
 
   const challenges = [
@@ -168,8 +164,8 @@ export default function DukeReuseApp() {
       {
         id: '1',
         type: 'reminder',
-        title: 'Return Reminder',
-        message: `Container ${DEMO_CONTAINER_ID} due in 5 days.`,
+        title: 'Container Out',
+        message: `You have 1 container to return (${DEMO_CONTAINER_ID})`,
         time: '9:00 AM',
         read: false
       },
@@ -237,9 +233,7 @@ export default function DukeReuseApp() {
           // Checkout
           setCurrentContainer({
             id: containerId,
-            status: 'checked_out',
-            daysOut: 0,
-            dueIn: 7
+            status: 'checked_out'
           })
           setTimeout(() => {
             setShowQRScanner(false)
@@ -308,7 +302,12 @@ export default function DukeReuseApp() {
       <div className="grid lg:grid-cols-3 gap-4">
         {/* Container Status */}
         <div className="lg:col-span-2 bg-white rounded-xl p-5 border border-gray-200">
-          <h2 className="font-medium text-gray-900 mb-4">Your Containers</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="font-medium text-gray-900">Your Containers</h2>
+            {currentContainer && (
+              <span className="text-sm text-gray-500">1 to return</span>
+            )}
+          </div>
 
           <div className="grid sm:grid-cols-2 gap-3">
             {/* Cup */}
@@ -324,40 +323,28 @@ export default function DukeReuseApp() {
             </div>
 
             {/* Container */}
-            <div className={`flex items-center gap-3 p-3 rounded-lg border ${currentContainer ? 'bg-amber-50 border-amber-100' : 'bg-gray-50 border-gray-100'}`}>
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${currentContainer ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-500'}`}>
+            <div className={`flex items-center gap-3 p-3 rounded-lg border ${currentContainer ? 'bg-blue-50 border-blue-100' : 'bg-gray-50 border-gray-100'}`}>
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${currentContainer ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
                 {Icons.container}
               </div>
               <div className="flex-1">
                 <p className="font-medium text-gray-900">Container</p>
                 {currentContainer ? (
-                  <p className="text-sm text-amber-600">Out · Day {currentContainer.daysOut}</p>
+                  <p className="text-sm text-blue-600">{currentContainer.id}</p>
                 ) : (
                   <p className="text-sm text-gray-500">None checked out</p>
                 )}
               </div>
               {currentContainer && (
-                <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
+                <button
+                  onClick={() => loadQRCode(currentContainer.id)}
+                  className="text-sm text-blue-600 hover:text-blue-800 underline"
+                >
+                  QR
+                </button>
               )}
             </div>
           </div>
-
-          {/* Return Warning */}
-          {currentContainer && (
-            <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200 flex items-start gap-3">
-              <span className="text-amber-600 mt-0.5">!</span>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-amber-800">Return by Friday</p>
-                <p className="text-sm text-amber-700">{currentContainer.dueIn} days left · ID: {currentContainer.id}</p>
-              </div>
-              <button
-                onClick={() => loadQRCode(currentContainer.id)}
-                className="text-sm text-amber-700 hover:text-amber-900 underline"
-              >
-                Show QR
-              </button>
-            </div>
-          )}
         </div>
 
         {/* Quick Actions */}
