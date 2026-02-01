@@ -303,7 +303,7 @@ export default function DukeReuseApp() {
         {/* Container Status */}
         <div className="lg:col-span-2 bg-white rounded-xl p-5 border border-gray-200">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="font-medium text-gray-900">Your Containers</h2>
+            <h2 className="font-medium text-gray-900">Your Reusables</h2>
             {currentContainer && (
               <span className="text-sm text-gray-500">1 to return</span>
             )}
@@ -316,7 +316,7 @@ export default function DukeReuseApp() {
                 {Icons.cup}
               </div>
               <div className="flex-1">
-                <p className="font-medium text-gray-900">Cup</p>
+                <p className="font-medium text-gray-900">Reusable Cup</p>
                 <p className="text-sm text-green-600">At home</p>
               </div>
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -328,7 +328,7 @@ export default function DukeReuseApp() {
                 {Icons.container}
               </div>
               <div className="flex-1">
-                <p className="font-medium text-gray-900">Container</p>
+                <p className="font-medium text-gray-900">Reusable Container</p>
                 {currentContainer ? (
                   <p className="text-sm text-blue-600">{currentContainer.id}</p>
                 ) : (
@@ -356,14 +356,14 @@ export default function DukeReuseApp() {
               className="w-full flex items-center gap-3 p-3 bg-[#001A57] text-white rounded-lg hover:bg-[#00296B] transition"
             >
               {Icons.qr}
-              <span>Checkout Container</span>
+              <span>Checkout</span>
             </button>
             <button
               onClick={() => openScanner('return')}
               className="w-full flex items-center gap-3 p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             >
               {Icons.check}
-              <span>Return Container</span>
+              <span>Return</span>
             </button>
             <button className="w-full flex items-center gap-3 p-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
               {Icons.location}
@@ -385,8 +385,8 @@ export default function DukeReuseApp() {
         <h2 className="font-medium text-gray-900 mb-3">This Semester</h2>
         <div className="grid grid-cols-4 gap-4">
           {[
-            { label: 'Containers', value: userData.stats.containersUsed },
-            { label: 'Cups', value: userData.stats.cupsUsed },
+            { label: 'Reusable Containers', value: userData.stats.containersUsed },
+            { label: 'Reusable Cups', value: userData.stats.cupsUsed },
             { label: 'CO₂ Saved', value: `${userData.stats.co2Prevented}kg` },
             { label: 'Points', value: userData.stats.points },
           ].map((stat, i) => (
@@ -412,11 +412,11 @@ export default function DukeReuseApp() {
           <div className="grid grid-cols-2 gap-4">
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <p className="text-3xl font-semibold text-gray-900">{userData.stats.containersUsed}</p>
-              <p className="text-sm text-gray-500">Containers</p>
+              <p className="text-sm text-gray-500">Reusable Containers</p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <p className="text-3xl font-semibold text-gray-900">{userData.stats.cupsUsed}</p>
-              <p className="text-sm text-gray-500">Cups</p>
+              <p className="text-sm text-gray-500">Reusable Cups</p>
             </div>
           </div>
         </div>
