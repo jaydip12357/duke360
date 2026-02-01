@@ -112,7 +112,6 @@ export default function DukeReuseApp() {
 
   // Simulate reminder notifications
   useEffect(() => {
-    // Initial notifications
     setNotifications([
       {
         id: '1',
@@ -132,7 +131,6 @@ export default function DukeReuseApp() {
       }
     ])
 
-    // Simulate periodic reminder
     const reminderInterval = setInterval(() => {
       if (userData.container.status === 'checked_out' && userData.container.dueIn <= 3) {
         addNotification({
@@ -141,7 +139,7 @@ export default function DukeReuseApp() {
           message: `Only ${userData.container.dueIn} days left to return your container!`
         })
       }
-    }, 60000) // Check every minute
+    }, 60000)
 
     return () => clearInterval(reminderInterval)
   }, [userData.container.status, userData.container.dueIn, addNotification])
@@ -157,22 +155,29 @@ export default function DukeReuseApp() {
 
   const unreadCount = notifications.filter(n => !n.read).length
 
+  const navItems = [
+    { id: 'home', icon: '🏠', label: 'Home' },
+    { id: 'impact', icon: '📊', label: 'Impact' },
+    { id: 'challenges', icon: '🎯', label: 'Challenges' },
+    { id: 'profile', icon: '👤', label: 'Profile' }
+  ]
+
   // Home Screen
   const HomeScreen = () => (
-    <div className="p-4 space-y-4">
-      {/* Welcome */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-700 rounded-2xl p-4 text-white">
+    <div className="space-y-4 lg:space-y-6">
+      {/* Welcome - Desktop shows notification bell inline */}
+      <div className="bg-gradient-to-r from-blue-900 to-blue-700 rounded-2xl p-4 lg:p-6 text-white">
         <div className="flex justify-between items-start">
           <div>
-            <p className="text-blue-200 text-sm">Welcome back,</p>
-            <h1 className="text-2xl font-bold">{userData.name} {userData.classYear}</h1>
-            <p className="text-blue-200 text-sm mt-1">{userData.dorm}</p>
+            <p className="text-blue-200 text-sm lg:text-base">Welcome back,</p>
+            <h1 className="text-2xl lg:text-3xl font-bold">{userData.name} {userData.classYear}</h1>
+            <p className="text-blue-200 text-sm lg:text-base mt-1">{userData.dorm}</p>
           </div>
           <button
             onClick={() => setShowNotifications(true)}
-            className="relative p-2 bg-white/20 rounded-full"
+            className="relative p-2 lg:p-3 bg-white/20 rounded-full hover:bg-white/30 transition"
           >
-            <span className="text-xl">🔔</span>
+            <span className="text-xl lg:text-2xl">🔔</span>
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                 {unreadCount}
@@ -182,170 +187,205 @@ export default function DukeReuseApp() {
         </div>
       </div>
 
-      {/* Kit Status */}
-      <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
-        <h2 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-          <span className="text-lg">🎒</span> Your Kit Status
-        </h2>
+      {/* Desktop: Two column layout */}
+      <div className="lg:grid lg:grid-cols-2 lg:gap-6 space-y-4 lg:space-y-0">
+        {/* Kit Status */}
+        <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-lg border border-gray-100">
+          <h2 className="font-semibold text-gray-800 mb-3 lg:mb-4 flex items-center gap-2 text-lg">
+            <span className="text-lg">🎒</span> Your Kit Status
+          </h2>
 
-        <div className="space-y-3">
-          {/* Cup Status */}
-          <div className="flex items-center justify-between p-3 bg-green-50 rounded-xl">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">☕</span>
-              <div>
-                <p className="font-medium text-gray-800">Personal Cup</p>
-                <p className="text-sm text-green-600">At home (clean)</p>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 lg:p-4 bg-green-50 rounded-xl">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl lg:text-3xl">☕</span>
+                <div>
+                  <p className="font-medium text-gray-800">Personal Cup</p>
+                  <p className="text-sm text-green-600">At home (clean)</p>
+                </div>
               </div>
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
             </div>
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+
+            <div className="flex items-center justify-between p-3 lg:p-4 bg-amber-50 rounded-xl">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl lg:text-3xl">🍱</span>
+                <div>
+                  <p className="font-medium text-gray-800">Personal Container</p>
+                  <p className="text-sm text-amber-600">Checked out (Day {userData.container.daysOut})</p>
+                </div>
+              </div>
+              <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
+            </div>
           </div>
 
-          {/* Container Status */}
-          <div className="flex items-center justify-between p-3 bg-amber-50 rounded-xl">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">🍱</span>
-              <div>
-                <p className="font-medium text-gray-800">Personal Container</p>
-                <p className="text-sm text-amber-600">Checked out (Day {userData.container.daysOut})</p>
-              </div>
-            </div>
-            <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
+          <div className="mt-3 lg:mt-4 p-3 lg:p-4 bg-amber-100 rounded-xl flex items-center gap-2">
+            <span>⚠️</span>
+            <p className="text-sm lg:text-base text-amber-800">Return container by Friday to avoid fees</p>
           </div>
         </div>
 
-        {/* Reminder */}
-        <div className="mt-3 p-3 bg-amber-100 rounded-xl flex items-center gap-2">
-          <span>⚠️</span>
-          <p className="text-sm text-amber-800">Return container by Friday to avoid fees</p>
+        {/* Quick Actions */}
+        <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-lg border border-gray-100">
+          <h2 className="font-semibold text-gray-800 mb-3 lg:mb-4 flex items-center gap-2 text-lg">
+            <span>⚡</span> Quick Actions
+          </h2>
+          <div className="grid grid-cols-2 gap-3 lg:gap-4">
+            <button className="bg-blue-600 text-white p-4 lg:p-5 rounded-xl flex flex-col items-center gap-2 hover:bg-blue-700 transition active:scale-95">
+              <span className="text-2xl lg:text-3xl">📱</span>
+              <span className="font-medium">Mobile Order</span>
+            </button>
+            <button className="bg-gray-100 text-gray-800 p-4 lg:p-5 rounded-xl flex flex-col items-center gap-2 hover:bg-gray-200 transition active:scale-95">
+              <span className="text-2xl lg:text-3xl">📍</span>
+              <span className="font-medium">Find Return Bin</span>
+            </button>
+            <button
+              onClick={simulateReturn}
+              className="bg-green-600 text-white p-4 lg:p-5 rounded-xl flex flex-col items-center gap-2 hover:bg-green-700 transition active:scale-95"
+            >
+              <span className="text-2xl lg:text-3xl">✅</span>
+              <span className="font-medium">Scan Return</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('impact')}
+              className="bg-gray-100 text-gray-800 p-4 lg:p-5 rounded-xl flex flex-col items-center gap-2 hover:bg-gray-200 transition active:scale-95"
+            >
+              <span className="text-2xl lg:text-3xl">📊</span>
+              <span className="font-medium">My Impact</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 gap-3">
-        <button className="bg-blue-600 text-white p-4 rounded-xl flex flex-col items-center gap-2 hover:bg-blue-700 transition active:scale-95">
-          <span className="text-2xl">📱</span>
-          <span className="font-medium">Mobile Order</span>
-        </button>
-        <button className="bg-gray-100 text-gray-800 p-4 rounded-xl flex flex-col items-center gap-2 hover:bg-gray-200 transition active:scale-95">
-          <span className="text-2xl">📍</span>
-          <span className="font-medium">Find Return Bin</span>
-        </button>
-        <button
-          onClick={simulateReturn}
-          className="bg-green-600 text-white p-4 rounded-xl flex flex-col items-center gap-2 hover:bg-green-700 transition active:scale-95"
-        >
-          <span className="text-2xl">✅</span>
-          <span className="font-medium">Scan Return</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('impact')}
-          className="bg-gray-100 text-gray-800 p-4 rounded-xl flex flex-col items-center gap-2 hover:bg-gray-200 transition active:scale-95"
-        >
-          <span className="text-2xl">📊</span>
-          <span className="font-medium">My Impact</span>
-        </button>
+      {/* Today's Tip - Full width */}
+      <div className="bg-blue-50 rounded-2xl p-4 lg:p-6 border border-blue-100">
+        <p className="text-sm lg:text-base text-blue-600 font-medium mb-1">💡 Today&apos;s Tip</p>
+        <p className="text-gray-700 lg:text-lg">Try asking for a smaller rice portion — you&apos;ve wasted rice in 3 of your last 5 meals!</p>
       </div>
 
-      {/* Today's Tip */}
-      <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
-        <p className="text-sm text-blue-600 font-medium mb-1">💡 Today&apos;s Tip</p>
-        <p className="text-gray-700">Try asking for a smaller rice portion — you&apos;ve wasted rice in 3 of your last 5 meals!</p>
+      {/* Quick Stats - Desktop only */}
+      <div className="hidden lg:grid lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl p-4 shadow border border-gray-100 text-center">
+          <p className="text-3xl font-bold text-blue-600">{userData.stats.containersUsed}</p>
+          <p className="text-sm text-gray-600">Containers Used</p>
+        </div>
+        <div className="bg-white rounded-xl p-4 shadow border border-gray-100 text-center">
+          <p className="text-3xl font-bold text-blue-600">{userData.stats.cupsUsed}</p>
+          <p className="text-sm text-gray-600">Cups Used</p>
+        </div>
+        <div className="bg-white rounded-xl p-4 shadow border border-gray-100 text-center">
+          <p className="text-3xl font-bold text-green-600">{userData.stats.co2Prevented} kg</p>
+          <p className="text-sm text-gray-600">CO₂ Prevented</p>
+        </div>
+        <div className="bg-white rounded-xl p-4 shadow border border-gray-100 text-center">
+          <p className="text-3xl font-bold text-amber-600">#{userData.stats.rank}</p>
+          <p className="text-sm text-gray-600">Campus Rank</p>
+        </div>
       </div>
     </div>
   )
 
   // Impact Dashboard
   const ImpactScreen = () => (
-    <div className="p-4 space-y-4">
-      <h1 className="text-2xl font-bold text-gray-800">📊 Your Impact</h1>
-      <p className="text-gray-500">Fall 2026 Semester</p>
-
-      {/* Packaging Impact */}
-      <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
-        <h2 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-          <span className="text-lg">📦</span> Packaging Saved
-        </h2>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="text-center p-3 bg-blue-50 rounded-xl">
-            <p className="text-3xl font-bold text-blue-600">{userData.stats.containersUsed}</p>
-            <p className="text-sm text-gray-600">Containers</p>
-          </div>
-          <div className="text-center p-3 bg-blue-50 rounded-xl">
-            <p className="text-3xl font-bold text-blue-600">{userData.stats.cupsUsed}</p>
-            <p className="text-sm text-gray-600">Cups</p>
-          </div>
-          <div className="text-center p-3 bg-green-50 rounded-xl">
-            <p className="text-3xl font-bold text-green-600">{userData.stats.wasteAvoided}</p>
-            <p className="text-sm text-gray-600">lbs waste avoided</p>
-          </div>
-          <div className="text-center p-3 bg-green-50 rounded-xl">
-            <p className="text-3xl font-bold text-green-600">{userData.stats.co2Prevented}</p>
-            <p className="text-sm text-gray-600">kg CO₂ prevented</p>
-          </div>
+    <div className="space-y-4 lg:space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">📊 Your Impact</h1>
+          <p className="text-gray-500">Fall 2026 Semester</p>
         </div>
       </div>
 
-      {/* Food Waste Impact */}
-      <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
-        <h2 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-          <span className="text-lg">🍽️</span> Food Waste (EcoTrack)
-        </h2>
+      {/* Desktop: Grid layout */}
+      <div className="lg:grid lg:grid-cols-2 lg:gap-6 space-y-4 lg:space-y-0">
+        {/* Packaging Impact */}
+        <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-lg border border-gray-100">
+          <h2 className="font-semibold text-gray-800 mb-3 lg:mb-4 flex items-center gap-2 text-lg">
+            <span className="text-lg">📦</span> Packaging Saved
+          </h2>
 
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Average per meal:</span>
-            <span className="font-bold text-green-600">{userData.stats.avgFoodWaste}g</span>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center p-3 lg:p-4 bg-blue-50 rounded-xl">
+              <p className="text-3xl lg:text-4xl font-bold text-blue-600">{userData.stats.containersUsed}</p>
+              <p className="text-sm lg:text-base text-gray-600">Containers</p>
+            </div>
+            <div className="text-center p-3 lg:p-4 bg-blue-50 rounded-xl">
+              <p className="text-3xl lg:text-4xl font-bold text-blue-600">{userData.stats.cupsUsed}</p>
+              <p className="text-sm lg:text-base text-gray-600">Cups</p>
+            </div>
+            <div className="text-center p-3 lg:p-4 bg-green-50 rounded-xl">
+              <p className="text-3xl lg:text-4xl font-bold text-green-600">{userData.stats.wasteAvoided}</p>
+              <p className="text-sm lg:text-base text-gray-600">lbs waste avoided</p>
+            </div>
+            <div className="text-center p-3 lg:p-4 bg-green-50 rounded-xl">
+              <p className="text-3xl lg:text-4xl font-bold text-green-600">{userData.stats.co2Prevented}</p>
+              <p className="text-sm lg:text-base text-gray-600">kg CO₂ prevented</p>
+            </div>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Improvement:</span>
-            <span className="font-bold text-green-600">↓ {userData.stats.foodWasteImprovement}%</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-3">
-            <div
-              className="bg-green-500 rounded-full h-3 transition-all"
-              style={{ width: `${100 - userData.stats.foodWasteImprovement}%` }}
-            ></div>
-          </div>
-          <p className="text-sm text-gray-500">🥇 Better than 78% of Duke students!</p>
         </div>
 
-        <div className="mt-3 p-3 bg-amber-50 rounded-xl">
-          <p className="text-sm text-amber-800">
-            💡 <strong>Most wasted:</strong> Rice — try asking for smaller portions
-          </p>
+        {/* Food Waste Impact */}
+        <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-lg border border-gray-100">
+          <h2 className="font-semibold text-gray-800 mb-3 lg:mb-4 flex items-center gap-2 text-lg">
+            <span className="text-lg">🍽️</span> Food Waste (EcoTrack)
+          </h2>
+
+          <div className="space-y-3 lg:space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">Average per meal:</span>
+              <span className="font-bold text-green-600 text-lg">{userData.stats.avgFoodWaste}g</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">Improvement:</span>
+              <span className="font-bold text-green-600 text-lg">↓ {userData.stats.foodWasteImprovement}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-3 lg:h-4">
+              <div
+                className="bg-green-500 rounded-full h-3 lg:h-4 transition-all"
+                style={{ width: `${100 - userData.stats.foodWasteImprovement}%` }}
+              ></div>
+            </div>
+            <p className="text-sm lg:text-base text-gray-500">🥇 Better than 78% of Duke students!</p>
+          </div>
+
+          <div className="mt-3 lg:mt-4 p-3 lg:p-4 bg-amber-50 rounded-xl">
+            <p className="text-sm lg:text-base text-amber-800">
+              💡 <strong>Most wasted:</strong> Rice — try asking for smaller portions
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Combined Score */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-700 rounded-2xl p-4 text-white">
-        <h2 className="font-semibold mb-3">🏆 Combined Score</h2>
+      <div className="bg-gradient-to-r from-blue-900 to-blue-700 rounded-2xl p-4 lg:p-6 text-white">
+        <h2 className="font-semibold mb-3 lg:mb-4 text-lg">🏆 Combined Score</h2>
         <div className="flex justify-between items-center">
           <div>
-            <p className="text-4xl font-bold">{userData.stats.points}</p>
+            <p className="text-4xl lg:text-5xl font-bold">{userData.stats.points}</p>
             <p className="text-blue-200">total points</p>
           </div>
           <div className="text-right">
-            <p className="text-2xl font-bold">#{userData.stats.rank}</p>
+            <p className="text-2xl lg:text-3xl font-bold">#{userData.stats.rank}</p>
             <p className="text-blue-200">of {userData.stats.totalStudents.toLocaleString()}</p>
           </div>
         </div>
       </div>
 
       {/* Equivalents */}
-      <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
-        <h2 className="font-semibold text-gray-800 mb-3">🌍 That&apos;s equivalent to...</h2>
-        <div className="space-y-2">
-          <p className="flex items-center gap-2">
-            <span>🌳</span> 0.4 trees saved
-          </p>
-          <p className="flex items-center gap-2">
-            <span>🚗</span> 36 miles not driven
-          </p>
-          <p className="flex items-center gap-2">
-            <span>💡</span> 48 hours of LED bulb powered
-          </p>
+      <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-lg border border-gray-100">
+        <h2 className="font-semibold text-gray-800 mb-3 lg:mb-4 text-lg">🌍 That&apos;s equivalent to...</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4">
+          <div className="flex lg:flex-col items-center gap-2 lg:gap-1 p-3 bg-green-50 rounded-xl">
+            <span className="text-2xl lg:text-3xl">🌳</span>
+            <span className="lg:text-xl font-semibold">0.4 trees saved</span>
+          </div>
+          <div className="flex lg:flex-col items-center gap-2 lg:gap-1 p-3 bg-blue-50 rounded-xl">
+            <span className="text-2xl lg:text-3xl">🚗</span>
+            <span className="lg:text-xl font-semibold">36 miles not driven</span>
+          </div>
+          <div className="flex lg:flex-col items-center gap-2 lg:gap-1 p-3 bg-amber-50 rounded-xl">
+            <span className="text-2xl lg:text-3xl">💡</span>
+            <span className="lg:text-xl font-semibold">48 hours LED powered</span>
+          </div>
         </div>
       </div>
     </div>
@@ -353,86 +393,90 @@ export default function DukeReuseApp() {
 
   // Challenges & Gamification Screen
   const ChallengesScreen = () => (
-    <div className="p-4 space-y-4">
-      <h1 className="text-2xl font-bold text-gray-800">🎯 Challenges</h1>
+    <div className="space-y-4 lg:space-y-6">
+      <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">🎯 Challenges</h1>
 
-      {/* Active Challenges */}
-      <div className="space-y-3">
-        {challenges.map((challenge, i) => (
-          <div key={i} className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
-            <div className="flex justify-between items-start mb-2">
-              <div>
-                <h3 className="font-semibold text-gray-800">{challenge.name}</h3>
-                <p className="text-sm text-gray-500">{challenge.desc}</p>
-              </div>
-              <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">
-                {challenge.reward}
-              </span>
-            </div>
-            <div className="mt-3">
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-gray-600">Progress</span>
-                <span className="font-medium">{challenge.progress}/{challenge.goal}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div
-                  className="bg-blue-600 rounded-full h-3 transition-all"
-                  style={{ width: `${(challenge.progress / challenge.goal) * 100}%` }}
-                ></div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Dorm Leaderboard */}
-      <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
-        <h2 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-          <span>🏠</span> November Dorm Competition
-        </h2>
-        <p className="text-sm text-gray-500 mb-3">Prize: Pizza party for winning dorm!</p>
-
-        <div className="space-y-2">
-          {dormLeaderboard.map((dorm, i) => (
-            <div
-              key={i}
-              className={`flex justify-between items-center p-3 rounded-xl ${dorm.isUser ? 'bg-blue-100 border-2 border-blue-500' : 'bg-gray-50'
-                }`}
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-lg font-bold text-gray-400 w-6">
-                  {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`}
+      {/* Desktop: Grid layout */}
+      <div className="lg:grid lg:grid-cols-2 lg:gap-6 space-y-4 lg:space-y-0">
+        {/* Active Challenges */}
+        <div className="space-y-3 lg:space-y-4">
+          <h2 className="font-semibold text-gray-600 text-sm uppercase tracking-wide">Active Challenges</h2>
+          {challenges.map((challenge, i) => (
+            <div key={i} className="bg-white rounded-2xl p-4 lg:p-5 shadow-lg border border-gray-100">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <h3 className="font-semibold text-gray-800 text-lg">{challenge.name}</h3>
+                  <p className="text-sm lg:text-base text-gray-500">{challenge.desc}</p>
+                </div>
+                <span className="text-xs lg:text-sm bg-blue-100 text-blue-600 px-2 py-1 rounded-full whitespace-nowrap">
+                  {challenge.reward}
                 </span>
-                <span className={`font-medium ${dorm.isUser ? 'text-blue-800' : 'text-gray-800'}`}>
-                  {dorm.name}
-                </span>
-                {dorm.isUser && <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">YOU</span>}
               </div>
-              <span className="font-semibold">{dorm.points.toLocaleString()} pts</span>
+              <div className="mt-3">
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-gray-600">Progress</span>
+                  <span className="font-medium">{challenge.progress}/{challenge.goal}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div
+                    className="bg-blue-600 rounded-full h-3 transition-all"
+                    style={{ width: `${(challenge.progress / challenge.goal) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
             </div>
           ))}
-        </div>
-      </div>
 
-      {/* Badges */}
-      <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
-        <h2 className="font-semibold text-gray-800 mb-3">🎖️ Your Badges</h2>
-        <div className="flex gap-3 flex-wrap">
-          <div className="text-center">
-            <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center text-2xl">🌱</div>
-            <p className="text-xs mt-1 text-gray-600">First Reuse</p>
+          {/* Badges */}
+          <div className="bg-white rounded-2xl p-4 lg:p-5 shadow-lg border border-gray-100">
+            <h2 className="font-semibold text-gray-800 mb-3 lg:mb-4">🎖️ Your Badges</h2>
+            <div className="flex gap-3 lg:gap-4 flex-wrap">
+              <div className="text-center">
+                <div className="w-14 h-14 lg:w-16 lg:h-16 bg-green-100 rounded-full flex items-center justify-center text-2xl lg:text-3xl">🌱</div>
+                <p className="text-xs lg:text-sm mt-1 text-gray-600">First Reuse</p>
+              </div>
+              <div className="text-center">
+                <div className="w-14 h-14 lg:w-16 lg:h-16 bg-blue-100 rounded-full flex items-center justify-center text-2xl lg:text-3xl">💯</div>
+                <p className="text-xs lg:text-sm mt-1 text-gray-600">100 Uses</p>
+              </div>
+              <div className="text-center">
+                <div className="w-14 h-14 lg:w-16 lg:h-16 bg-amber-100 rounded-full flex items-center justify-center text-2xl lg:text-3xl">🔥</div>
+                <p className="text-xs lg:text-sm mt-1 text-gray-600">7-Day Streak</p>
+              </div>
+              <div className="text-center">
+                <div className="w-14 h-14 lg:w-16 lg:h-16 bg-gray-100 rounded-full flex items-center justify-center text-2xl lg:text-3xl border-2 border-dashed border-gray-300">?</div>
+                <p className="text-xs lg:text-sm mt-1 text-gray-400">Locked</p>
+              </div>
+            </div>
           </div>
-          <div className="text-center">
-            <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center text-2xl">💯</div>
-            <p className="text-xs mt-1 text-gray-600">100 Uses</p>
-          </div>
-          <div className="text-center">
-            <div className="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center text-2xl">🔥</div>
-            <p className="text-xs mt-1 text-gray-600">7-Day Streak</p>
-          </div>
-          <div className="text-center">
-            <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center text-2xl border-2 border-dashed border-gray-300">?</div>
-            <p className="text-xs mt-1 text-gray-400">Locked</p>
+        </div>
+
+        {/* Dorm Leaderboard */}
+        <div className="bg-white rounded-2xl p-4 lg:p-5 shadow-lg border border-gray-100 h-fit">
+          <h2 className="font-semibold text-gray-800 mb-3 lg:mb-4 flex items-center gap-2 text-lg">
+            <span>🏠</span> November Dorm Competition
+          </h2>
+          <p className="text-sm lg:text-base text-gray-500 mb-3 lg:mb-4">Prize: Pizza party for winning dorm!</p>
+
+          <div className="space-y-2 lg:space-y-3">
+            {dormLeaderboard.map((dorm, i) => (
+              <div
+                key={i}
+                className={`flex justify-between items-center p-3 lg:p-4 rounded-xl ${dorm.isUser ? 'bg-blue-100 border-2 border-blue-500' : 'bg-gray-50'
+                  }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-lg lg:text-xl font-bold text-gray-400 w-6">
+                    {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`}
+                  </span>
+                  <span className={`font-medium lg:text-lg ${dorm.isUser ? 'text-blue-800' : 'text-gray-800'}`}>
+                    {dorm.name}
+                  </span>
+                  {dorm.isUser && <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">YOU</span>}
+                </div>
+                <span className="font-semibold lg:text-lg">{dorm.points.toLocaleString()} pts</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -441,69 +485,59 @@ export default function DukeReuseApp() {
 
   // Profile Screen
   const ProfileScreen = () => (
-    <div className="p-4 space-y-4">
-      <h1 className="text-2xl font-bold text-gray-800">👤 Profile</h1>
+    <div className="space-y-4 lg:space-y-6">
+      <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">👤 Profile</h1>
 
-      {/* User Info */}
-      <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-3xl">
-            👤
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-gray-800">{userData.name}</h2>
-            <p className="text-gray-500">Duke Class of {userData.classYear}</p>
-            <p className="text-gray-500">{userData.dorm}</p>
+      {/* Desktop: Grid layout */}
+      <div className="lg:grid lg:grid-cols-3 lg:gap-6 space-y-4 lg:space-y-0">
+        {/* User Info */}
+        <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-lg border border-gray-100">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 lg:w-20 lg:h-20 bg-blue-100 rounded-full flex items-center justify-center text-3xl lg:text-4xl">
+              👤
+            </div>
+            <div>
+              <h2 className="text-xl lg:text-2xl font-bold text-gray-800">{userData.name}</h2>
+              <p className="text-gray-500">Duke Class of {userData.classYear}</p>
+              <p className="text-gray-500">{userData.dorm}</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="bg-blue-50 rounded-xl p-3 text-center">
-          <p className="text-2xl font-bold text-blue-600">{userData.stats.points}</p>
-          <p className="text-xs text-gray-600">Points</p>
-        </div>
-        <div className="bg-green-50 rounded-xl p-3 text-center">
-          <p className="text-2xl font-bold text-green-600">#{userData.stats.rank}</p>
-          <p className="text-xs text-gray-600">Rank</p>
-        </div>
-        <div className="bg-amber-50 rounded-xl p-3 text-center">
-          <p className="text-2xl font-bold text-amber-600">7</p>
-          <p className="text-xs text-gray-600">Day Streak</p>
+        {/* Quick Stats */}
+        <div className="lg:col-span-2 grid grid-cols-3 gap-3 lg:gap-4">
+          <div className="bg-blue-50 rounded-xl p-3 lg:p-5 text-center">
+            <p className="text-2xl lg:text-4xl font-bold text-blue-600">{userData.stats.points}</p>
+            <p className="text-xs lg:text-sm text-gray-600">Points</p>
+          </div>
+          <div className="bg-green-50 rounded-xl p-3 lg:p-5 text-center">
+            <p className="text-2xl lg:text-4xl font-bold text-green-600">#{userData.stats.rank}</p>
+            <p className="text-xs lg:text-sm text-gray-600">Rank</p>
+          </div>
+          <div className="bg-amber-50 rounded-xl p-3 lg:p-5 text-center">
+            <p className="text-2xl lg:text-4xl font-bold text-amber-600">7</p>
+            <p className="text-xs lg:text-sm text-gray-600">Day Streak</p>
+          </div>
         </div>
       </div>
 
       {/* Settings */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
-        <button className="w-full p-4 flex items-center justify-between border-b border-gray-100">
-          <span className="flex items-center gap-3">
-            <span>🔔</span>
-            <span>Notification Settings</span>
-          </span>
-          <span className="text-gray-400">→</span>
-        </button>
-        <button className="w-full p-4 flex items-center justify-between border-b border-gray-100">
-          <span className="flex items-center gap-3">
-            <span>🎨</span>
-            <span>Customize Cup/Container</span>
-          </span>
-          <span className="text-gray-400">→</span>
-        </button>
-        <button className="w-full p-4 flex items-center justify-between border-b border-gray-100">
-          <span className="flex items-center gap-3">
-            <span>📜</span>
-            <span>Checkout History</span>
-          </span>
-          <span className="text-gray-400">→</span>
-        </button>
-        <button className="w-full p-4 flex items-center justify-between">
-          <span className="flex items-center gap-3">
-            <span>❓</span>
-            <span>Help & Support</span>
-          </span>
-          <span className="text-gray-400">→</span>
-        </button>
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 lg:max-w-2xl">
+        <h2 className="font-semibold text-gray-800 p-4 lg:p-5 border-b border-gray-100">Settings</h2>
+        {[
+          { icon: '🔔', label: 'Notification Settings' },
+          { icon: '🎨', label: 'Customize Cup/Container' },
+          { icon: '📜', label: 'Checkout History' },
+          { icon: '❓', label: 'Help & Support' }
+        ].map((item, i) => (
+          <button key={i} className="w-full p-4 lg:p-5 flex items-center justify-between border-b border-gray-100 last:border-0 hover:bg-gray-50 transition">
+            <span className="flex items-center gap-3">
+              <span className="text-xl">{item.icon}</span>
+              <span className="lg:text-lg">{item.label}</span>
+            </span>
+            <span className="text-gray-400">→</span>
+          </button>
+        ))}
       </div>
     </div>
   )
@@ -524,21 +558,21 @@ export default function DukeReuseApp() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25 }}
-            className="absolute right-0 top-0 bottom-0 w-full max-w-sm bg-white shadow-xl"
+            className="absolute right-0 top-0 bottom-0 w-full max-w-sm lg:max-w-md bg-white shadow-xl"
             onClick={e => e.stopPropagation()}
           >
-            <div className="p-4 border-b border-gray-100 flex justify-between items-center">
-              <h2 className="text-lg font-semibold">Notifications</h2>
-              <div className="flex gap-2">
+            <div className="p-4 lg:p-5 border-b border-gray-100 flex justify-between items-center">
+              <h2 className="text-lg lg:text-xl font-semibold">Notifications</h2>
+              <div className="flex gap-2 lg:gap-3">
                 <button
                   onClick={markAllRead}
-                  className="text-sm text-blue-600 hover:underline"
+                  className="text-sm lg:text-base text-blue-600 hover:underline"
                 >
                   Mark all read
                 </button>
                 <button
                   onClick={() => setShowNotifications(false)}
-                  className="p-1 hover:bg-gray-100 rounded"
+                  className="p-1 lg:p-2 hover:bg-gray-100 rounded text-xl"
                 >
                   ✕
                 </button>
@@ -547,26 +581,26 @@ export default function DukeReuseApp() {
             <div className="overflow-y-auto h-full pb-20">
               {notifications.length === 0 ? (
                 <div className="p-8 text-center text-gray-500">
-                  <p className="text-4xl mb-2">🔔</p>
-                  <p>No notifications yet</p>
+                  <p className="text-4xl lg:text-5xl mb-2">🔔</p>
+                  <p className="lg:text-lg">No notifications yet</p>
                 </div>
               ) : (
                 notifications.map(notification => (
                   <div
                     key={notification.id}
-                    className={`p-4 border-b border-gray-100 ${!notification.read ? 'bg-blue-50' : ''}`}
+                    className={`p-4 lg:p-5 border-b border-gray-100 ${!notification.read ? 'bg-blue-50' : ''}`}
                   >
                     <div className="flex gap-3">
-                      <span className="text-2xl">
+                      <span className="text-2xl lg:text-3xl">
                         {notification.type === 'reminder' ? '⏰' :
                           notification.type === 'achievement' ? '🏆' : '⚠️'}
                       </span>
                       <div className="flex-1">
                         <div className="flex justify-between items-start">
-                          <p className="font-medium text-gray-800">{notification.title}</p>
-                          <span className="text-xs text-gray-400">{notification.time}</span>
+                          <p className="font-medium text-gray-800 lg:text-lg">{notification.title}</p>
+                          <span className="text-xs lg:text-sm text-gray-400">{notification.time}</span>
                         </div>
-                        <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+                        <p className="text-sm lg:text-base text-gray-600 mt-1">{notification.message}</p>
                       </div>
                     </div>
                   </div>
@@ -593,22 +627,22 @@ export default function DukeReuseApp() {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white rounded-2xl p-6 max-w-sm w-full text-center"
+            className="bg-white rounded-2xl p-6 lg:p-8 max-w-sm lg:max-w-md w-full text-center"
           >
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">✅</span>
+            <div className="w-20 h-20 lg:w-24 lg:h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-4xl lg:text-5xl">✅</span>
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Container Returned!</h2>
-            <p className="text-gray-600 mb-4">Great job, {userData.name}!</p>
+            <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">Container Returned!</h2>
+            <p className="text-gray-600 mb-4 lg:text-lg">Great job, {userData.name}!</p>
 
-            <div className="bg-green-50 rounded-xl p-4 mb-4">
-              <p className="text-green-800 font-medium">+10 points earned</p>
-              <p className="text-sm text-green-600">You&apos;ve now saved 90 containers this semester!</p>
+            <div className="bg-green-50 rounded-xl p-4 lg:p-5 mb-4">
+              <p className="text-green-800 font-medium lg:text-lg">+10 points earned</p>
+              <p className="text-sm lg:text-base text-green-600">You&apos;ve now saved 90 containers this semester!</p>
             </div>
 
             <button
               onClick={() => setShowReturnConfirmation(false)}
-              className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition"
+              className="w-full bg-blue-600 text-white py-3 lg:py-4 rounded-xl font-medium hover:bg-blue-700 transition text-lg"
             >
               Awesome!
             </button>
@@ -618,32 +652,100 @@ export default function DukeReuseApp() {
     </AnimatePresence>
   )
 
+  // Desktop Sidebar
+  const DesktopSidebar = () => (
+    <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:left-0 bg-blue-900 text-white">
+      {/* Logo */}
+      <div className="p-6 border-b border-blue-800">
+        <h1 className="text-2xl font-bold">DukeReuse 360</h1>
+        <p className="text-blue-300 text-sm mt-1">Smart Reusable System</p>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 p-4 space-y-2">
+        {navItems.map(item => (
+          <button
+            key={item.id}
+            onClick={() => setActiveTab(item.id)}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${activeTab === item.id
+              ? 'bg-blue-800 text-white'
+              : 'text-blue-200 hover:bg-blue-800/50'
+              }`}
+          >
+            <span className="text-xl">{item.icon}</span>
+            <span className="font-medium">{item.label}</span>
+          </button>
+        ))}
+      </nav>
+
+      {/* User Info */}
+      <div className="p-4 border-t border-blue-800">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-blue-700 rounded-full flex items-center justify-center">
+            👤
+          </div>
+          <div>
+            <p className="font-medium">{userData.name}</p>
+            <p className="text-blue-300 text-sm">{userData.dorm}</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+  )
+
   return (
-    <div className="min-h-screen bg-gray-50 max-w-md mx-auto relative">
-      {/* Status Bar Mockup */}
-      <div className="bg-blue-900 text-white px-4 py-2 flex justify-between text-sm sticky top-0 z-40">
-        <span>9:41</span>
-        <span className="font-semibold">DukeReuse 360</span>
-        <span>🔋 89%</span>
+    <div className="min-h-screen bg-gray-50">
+      {/* Desktop Sidebar */}
+      <DesktopSidebar />
+
+      {/* Main Content Area */}
+      <div className="lg:pl-64">
+        {/* Mobile Status Bar */}
+        <div className="lg:hidden bg-blue-900 text-white px-4 py-2 flex justify-between text-sm sticky top-0 z-40">
+          <span>9:41</span>
+          <span className="font-semibold">DukeReuse 360</span>
+          <span>🔋 89%</span>
+        </div>
+
+        {/* Desktop Header */}
+        <header className="hidden lg:flex lg:items-center lg:justify-between bg-white border-b border-gray-200 px-8 py-4 sticky top-0 z-40">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800 capitalize">{activeTab}</h2>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setShowNotifications(true)}
+              className="relative p-2 hover:bg-gray-100 rounded-full transition"
+            >
+              <span className="text-2xl">🔔</span>
+              {unreadCount > 0 && (
+                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">👤</div>
+              <span className="font-medium">{userData.name}</span>
+            </div>
+          </div>
+        </header>
+
+        {/* Page Content */}
+        <main className="p-4 lg:p-8 pb-24 lg:pb-8">
+          <div className="max-w-6xl mx-auto">
+            {activeTab === 'home' && <HomeScreen />}
+            {activeTab === 'impact' && <ImpactScreen />}
+            {activeTab === 'challenges' && <ChallengesScreen />}
+            {activeTab === 'profile' && <ProfileScreen />}
+          </div>
+        </main>
       </div>
 
-      {/* Main Content */}
-      <div className="pb-24">
-        {activeTab === 'home' && <HomeScreen />}
-        {activeTab === 'impact' && <ImpactScreen />}
-        {activeTab === 'challenges' && <ChallengesScreen />}
-        {activeTab === 'profile' && <ProfileScreen />}
-      </div>
-
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 max-w-md mx-auto z-40">
+      {/* Mobile Bottom Navigation */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
         <div className="flex justify-around py-2">
-          {[
-            { id: 'home', icon: '🏠', label: 'Home' },
-            { id: 'impact', icon: '📊', label: 'Impact' },
-            { id: 'challenges', icon: '🎯', label: 'Challenges' },
-            { id: 'profile', icon: '👤', label: 'Profile' }
-          ].map(tab => (
+          {navItems.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
@@ -657,10 +759,8 @@ export default function DukeReuseApp() {
         </div>
       </div>
 
-      {/* Notifications Panel */}
+      {/* Modals */}
       <NotificationsPanel />
-
-      {/* Return Confirmation Modal */}
       <ReturnConfirmation />
     </div>
   )
