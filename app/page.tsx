@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import {
   Recycle, Users, Building2, ShieldCheck, ArrowRight,
@@ -210,6 +211,138 @@ export default function LandingPage() {
                   <div className="text-sm text-gray-500">{stat.label}</div>
                 </motion.div>
               ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Product Showcase */}
+      <section className="py-16 px-4 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            className="grid md:grid-cols-2 gap-12 items-center"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            {/* Container Image */}
+            <motion.div
+              className="relative"
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="bg-gradient-to-br from-blue-50 to-white rounded-3xl p-8 shadow-xl">
+                <Image
+                  src="/images/360box.png"
+                  alt="DukeReuse 360Box - Smart Reusable Container"
+                  width={500}
+                  height={400}
+                  className="w-full h-auto rounded-xl"
+                />
+              </div>
+            </motion.div>
+
+            {/* Product Details */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl font-bold text-[#001A57] mb-4">
+                Meet the 360Box
+              </h2>
+              <p className="text-lg text-gray-600 mb-6">
+                Our RFID-enabled reusable container designed specifically for Duke dining.
+                Durable, dishwasher-safe, and smart enough to track itself.
+              </p>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">RFID Enabled</p>
+                    <p className="text-sm text-gray-500">Automatic check-in/out at return stations</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Durable Design</p>
+                    <p className="text-sm text-gray-500">Built to last 1000+ uses, dishwasher safe</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <CheckCircle className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Unique ID</p>
+                    <p className="text-sm text-gray-500">Each container has a unique ID (DU-2026-XXX)</p>
+                  </div>
+                </li>
+              </ul>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Problem vs Solution */}
+      <section className="py-16 px-4 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl font-bold text-[#001A57] mb-4">The Problem We&apos;re Solving</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Single-use containers create waste and cost. Our reusable solution is better for the planet and your wallet.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="bg-white rounded-2xl shadow-xl overflow-hidden"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <Image
+              src="/images/comparison.png"
+              alt="Current Liability vs Proposed Asset - Single-use containers vs DukeReuse 360Box"
+              width={1200}
+              height={500}
+              className="w-full h-auto"
+            />
+          </motion.div>
+
+          <motion.div
+            className="grid md:grid-cols-2 gap-8 mt-8"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            <div className="bg-red-50 rounded-xl p-6 border border-red-100">
+              <h3 className="font-bold text-red-800 mb-3">Current Problem</h3>
+              <ul className="space-y-2 text-sm text-red-700">
+                <li>• Thousands of disposable containers used daily</li>
+                <li>• Non-recyclable, ends up in landfills</li>
+                <li>• Ongoing cost for Duke Dining</li>
+                <li>• No tracking or accountability</li>
+              </ul>
+            </div>
+            <div className="bg-green-50 rounded-xl p-6 border border-green-100">
+              <h3 className="font-bold text-green-800 mb-3">Our Solution</h3>
+              <ul className="space-y-2 text-sm text-green-700">
+                <li>• Reusable containers last 1000+ uses</li>
+                <li>• RFID tracking for accountability</li>
+                <li>• Long-term cost savings</li>
+                <li>• Gamified to encourage participation</li>
+              </ul>
             </div>
           </motion.div>
         </div>
