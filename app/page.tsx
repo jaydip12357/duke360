@@ -110,8 +110,16 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
+      {/* Make-A-Thon Banner */}
+      <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 px-4 z-50 text-center">
+        <p className="text-sm md:text-base font-medium">
+          <Leaf className="w-4 h-4 inline-block mr-2 -mt-0.5" />
+          This is a project submission for <span className="font-bold">Duke Climate & Sustainability Make-A-Thon 2026</span> — Demo purposes only
+        </p>
+      </div>
+
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 border-b">
+      <nav className="fixed top-10 left-0 right-0 bg-white/80 backdrop-blur-md z-40 border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-2">
@@ -131,7 +139,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4">
+      <section className="pt-40 pb-20 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div
             className="text-center max-w-4xl mx-auto"
