@@ -56,6 +56,7 @@ export default function DukeReuseApp() {
   const [showQRScanner, setShowQRScanner] = useState(false)
   const [scanMode, setScanMode] = useState<'checkout' | 'return'>('return')
   const [scanResult, setScanResult] = useState<{ success: boolean; message: string } | null>(null)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   // Sample user data
   const [userData] = useState<UserData>({
@@ -208,19 +209,19 @@ export default function DukeReuseApp() {
   // Home Screen
   const HomeScreen = () => (
     <div className="space-y-4 lg:space-y-6">
-      {/* Welcome - Desktop shows notification bell inline */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-700 rounded-2xl p-4 lg:p-6 text-white">
+      {/* Welcome Banner - Mobile only, desktop has header */}
+      <div className="lg:hidden bg-gradient-to-r from-blue-900 to-blue-700 rounded-2xl p-4 text-white">
         <div className="flex justify-between items-start">
           <div>
-            <p className="text-blue-200 text-sm lg:text-base">Welcome back,</p>
-            <h1 className="text-2xl lg:text-3xl font-bold">{userData.name} {userData.classYear}</h1>
-            <p className="text-blue-200 text-sm lg:text-base mt-1">{userData.dorm}</p>
+            <p className="text-blue-200 text-sm">Welcome back,</p>
+            <h1 className="text-2xl font-bold">{userData.name} {userData.classYear}</h1>
+            <p className="text-blue-200 text-sm mt-1">{userData.dorm}</p>
           </div>
           <button
             onClick={() => setShowNotifications(true)}
-            className="relative p-2 lg:p-3 bg-white/20 rounded-full hover:bg-white/30 transition"
+            className="relative p-2 bg-white/20 rounded-full hover:bg-white/30 transition"
           >
-            <span className="text-xl lg:text-2xl">🔔</span>
+            <span className="text-xl">🔔</span>
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                 {unreadCount}
@@ -230,73 +231,110 @@ export default function DukeReuseApp() {
         </div>
       </div>
 
-      {/* Desktop: Two column layout */}
-      <div className="lg:grid lg:grid-cols-2 lg:gap-6 space-y-4 lg:space-y-0">
+      {/* Desktop: Stats Overview Banner */}
+      <div className="hidden lg:block bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 rounded-2xl p-6 text-white shadow-xl">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-blue-200">Your Sustainability Dashboard</h2>
+            <p className="text-3xl font-bold mt-1">Fall 2026 Semester</p>
+          </div>
+          <div className="flex gap-8">
+            <div className="text-center">
+              <p className="text-4xl font-bold">{userData.stats.containersUsed + userData.stats.cupsUsed}</p>
+              <p className="text-blue-200 text-sm">Total Uses</p>
+            </div>
+            <div className="text-center">
+              <p className="text-4xl font-bold text-green-400">{userData.stats.co2Prevented}kg</p>
+              <p className="text-blue-200 text-sm">CO₂ Saved</p>
+            </div>
+            <div className="text-center">
+              <p className="text-4xl font-bold text-amber-400">#{userData.stats.rank}</p>
+              <p className="text-blue-200 text-sm">Campus Rank</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop: Three column layout */}
+      <div className="lg:grid lg:grid-cols-3 lg:gap-6 space-y-4 lg:space-y-0">
         {/* Kit Status */}
-        <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-lg border border-gray-100">
+        <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow lg:col-span-2">
           <h2 className="font-semibold text-gray-800 mb-3 lg:mb-4 flex items-center gap-2 text-lg">
             <span className="text-lg">🎒</span> Your Kit Status
           </h2>
 
-          <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 lg:p-4 bg-green-50 rounded-xl">
+          <div className="lg:grid lg:grid-cols-2 space-y-3 lg:space-y-0 lg:gap-4">
+            <div className="flex items-center justify-between p-3 lg:p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100 hover:border-green-200 transition-colors">
               <div className="flex items-center gap-3">
-                <span className="text-2xl lg:text-3xl">☕</span>
+                <div className="w-12 h-12 lg:w-14 lg:h-14 bg-green-100 rounded-xl flex items-center justify-center">
+                  <span className="text-2xl lg:text-3xl">☕</span>
+                </div>
                 <div>
-                  <p className="font-medium text-gray-800">Personal Cup</p>
-                  <p className="text-sm text-green-600">At home (clean)</p>
+                  <p className="font-semibold text-gray-800">Personal Cup</p>
+                  <p className="text-sm text-green-600 font-medium">At home (clean)</p>
                 </div>
               </div>
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Ready</span>
+                <div className="w-3 h-3 bg-green-500 rounded-full shadow-sm"></div>
+              </div>
             </div>
 
-            <div className="flex items-center justify-between p-3 lg:p-4 bg-amber-50 rounded-xl">
+            <div className="flex items-center justify-between p-3 lg:p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-100 hover:border-amber-200 transition-colors">
               <div className="flex items-center gap-3">
-                <span className="text-2xl lg:text-3xl">🍱</span>
+                <div className="w-12 h-12 lg:w-14 lg:h-14 bg-amber-100 rounded-xl flex items-center justify-center">
+                  <span className="text-2xl lg:text-3xl">🍱</span>
+                </div>
                 <div>
-                  <p className="font-medium text-gray-800">Personal Container</p>
-                  <p className="text-sm text-amber-600">Checked out (Day {userData.container.daysOut})</p>
+                  <p className="font-semibold text-gray-800">Personal Container</p>
+                  <p className="text-sm text-amber-600 font-medium">Checked out (Day {userData.container.daysOut})</p>
                 </div>
               </div>
-              <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full">In Use</span>
+                <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse shadow-sm"></div>
+              </div>
             </div>
           </div>
 
-          <div className="mt-3 lg:mt-4 p-3 lg:p-4 bg-amber-100 rounded-xl flex items-center gap-2">
-            <span>⚠️</span>
-            <p className="text-sm lg:text-base text-amber-800">Return container by Friday to avoid fees</p>
+          <div className="mt-4 p-4 bg-gradient-to-r from-amber-100 to-orange-100 rounded-xl flex items-center gap-3 border border-amber-200">
+            <span className="text-2xl">⚠️</span>
+            <div>
+              <p className="font-semibold text-amber-800">Return Reminder</p>
+              <p className="text-sm text-amber-700">Return container by Friday to avoid fees ({userData.container.dueIn} days left)</p>
+            </div>
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-lg border border-gray-100">
+        {/* Quick Actions - Desktop: Sidebar style */}
+        <div className="bg-white rounded-2xl p-4 lg:p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
           <h2 className="font-semibold text-gray-800 mb-3 lg:mb-4 flex items-center gap-2 text-lg">
             <span>⚡</span> Quick Actions
           </h2>
-          <div className="grid grid-cols-2 gap-3 lg:gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-1 gap-3">
             <button
               onClick={() => openScanner('checkout')}
-              className="bg-blue-600 text-white p-4 lg:p-5 rounded-xl flex flex-col items-center gap-2 hover:bg-blue-700 transition active:scale-95"
+              className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-xl flex lg:flex-row flex-col items-center lg:justify-start justify-center gap-3 hover:from-blue-700 hover:to-blue-800 transition-all active:scale-95 shadow-md hover:shadow-lg"
             >
-              <span className="text-2xl lg:text-3xl">📷</span>
+              <span className="text-2xl">📷</span>
               <span className="font-medium">Scan Checkout</span>
-            </button>
-            <button className="bg-gray-100 text-gray-800 p-4 lg:p-5 rounded-xl flex flex-col items-center gap-2 hover:bg-gray-200 transition active:scale-95">
-              <span className="text-2xl lg:text-3xl">📍</span>
-              <span className="font-medium">Find Return Bin</span>
             </button>
             <button
               onClick={() => openScanner('return')}
-              className="bg-green-600 text-white p-4 lg:p-5 rounded-xl flex flex-col items-center gap-2 hover:bg-green-700 transition active:scale-95"
+              className="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-4 rounded-xl flex lg:flex-row flex-col items-center lg:justify-start justify-center gap-3 hover:from-green-700 hover:to-emerald-700 transition-all active:scale-95 shadow-md hover:shadow-lg"
             >
-              <span className="text-2xl lg:text-3xl">📷</span>
+              <span className="text-2xl">✅</span>
               <span className="font-medium">Scan Return</span>
+            </button>
+            <button className="bg-gray-100 text-gray-800 p-4 rounded-xl flex lg:flex-row flex-col items-center lg:justify-start justify-center gap-3 hover:bg-gray-200 transition-all active:scale-95">
+              <span className="text-2xl">📍</span>
+              <span className="font-medium">Find Return Bin</span>
             </button>
             <button
               onClick={() => setActiveTab('impact')}
-              className="bg-gray-100 text-gray-800 p-4 lg:p-5 rounded-xl flex flex-col items-center gap-2 hover:bg-gray-200 transition active:scale-95"
+              className="bg-gray-100 text-gray-800 p-4 rounded-xl flex lg:flex-row flex-col items-center lg:justify-start justify-center gap-3 hover:bg-gray-200 transition-all active:scale-95"
             >
-              <span className="text-2xl lg:text-3xl">📊</span>
+              <span className="text-2xl">📊</span>
               <span className="font-medium">My Impact</span>
             </button>
           </div>
@@ -304,29 +342,35 @@ export default function DukeReuseApp() {
       </div>
 
       {/* Today's Tip - Full width */}
-      <div className="bg-blue-50 rounded-2xl p-4 lg:p-6 border border-blue-100">
-        <p className="text-sm lg:text-base text-blue-600 font-medium mb-1">💡 Today&apos;s Tip</p>
-        <p className="text-gray-700 lg:text-lg">Try asking for a smaller rice portion — you&apos;ve wasted rice in 3 of your last 5 meals!</p>
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-4 lg:p-6 border border-blue-100 hover:border-blue-200 transition-colors">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <span className="text-2xl">💡</span>
+          </div>
+          <div>
+            <p className="text-blue-600 font-semibold mb-1">Today&apos;s Personalized Tip</p>
+            <p className="text-gray-700 lg:text-lg">Try asking for a smaller rice portion — you&apos;ve wasted rice in 3 of your last 5 meals!</p>
+          </div>
+        </div>
       </div>
 
       {/* Quick Stats - Desktop only */}
       <div className="hidden lg:grid lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl p-4 shadow border border-gray-100 text-center">
-          <p className="text-3xl font-bold text-blue-600">{userData.stats.containersUsed}</p>
-          <p className="text-sm text-gray-600">Containers Used</p>
-        </div>
-        <div className="bg-white rounded-xl p-4 shadow border border-gray-100 text-center">
-          <p className="text-3xl font-bold text-blue-600">{userData.stats.cupsUsed}</p>
-          <p className="text-sm text-gray-600">Cups Used</p>
-        </div>
-        <div className="bg-white rounded-xl p-4 shadow border border-gray-100 text-center">
-          <p className="text-3xl font-bold text-green-600">{userData.stats.co2Prevented} kg</p>
-          <p className="text-sm text-gray-600">CO₂ Prevented</p>
-        </div>
-        <div className="bg-white rounded-xl p-4 shadow border border-gray-100 text-center">
-          <p className="text-3xl font-bold text-amber-600">#{userData.stats.rank}</p>
-          <p className="text-sm text-gray-600">Campus Rank</p>
-        </div>
+        {[
+          { value: userData.stats.containersUsed, label: 'Containers Used', color: 'blue', icon: '🍱' },
+          { value: userData.stats.cupsUsed, label: 'Cups Used', color: 'indigo', icon: '☕' },
+          { value: `${userData.stats.co2Prevented} kg`, label: 'CO₂ Prevented', color: 'green', icon: '🌱' },
+          { value: `#${userData.stats.rank}`, label: 'Campus Rank', color: 'amber', icon: '🏆' }
+        ].map((stat, i) => (
+          <div key={i} className="bg-white rounded-xl p-5 shadow-md border border-gray-100 hover:shadow-lg transition-all hover:-translate-y-1 group cursor-default">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-2xl group-hover:scale-110 transition-transform">{stat.icon}</span>
+              <span className={`text-xs px-2 py-1 rounded-full bg-${stat.color}-100 text-${stat.color}-700`}>This semester</span>
+            </div>
+            <p className={`text-3xl font-bold text-${stat.color}-600`}>{stat.value}</p>
+            <p className="text-sm text-gray-600 mt-1">{stat.label}</p>
+          </div>
+        ))}
       </div>
     </div>
   )
@@ -860,85 +904,209 @@ export default function DukeReuseApp() {
 
   // Desktop Sidebar
   const DesktopSidebar = () => (
-    <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:left-0 bg-blue-900 text-white">
-      {/* Logo */}
-      <div className="p-6 border-b border-blue-800">
-        <h1 className="text-2xl font-bold">DukeReuse 360</h1>
-        <p className="text-blue-300 text-sm mt-1">Smart Reusable System</p>
+    <motion.aside
+      initial={false}
+      animate={{ width: sidebarCollapsed ? 80 : 256 }}
+      transition={{ duration: 0.2, ease: 'easeInOut' }}
+      className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:left-0 bg-gradient-to-b from-blue-900 via-blue-900 to-blue-950 text-white shadow-2xl z-50"
+    >
+      {/* Logo & Collapse Toggle */}
+      <div className="p-4 border-b border-blue-800/50 flex items-center justify-between">
+        <div className={`flex items-center gap-3 overflow-hidden ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
+          <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-xl flex items-center justify-center text-xl font-bold shadow-lg flex-shrink-0">
+            D
+          </div>
+          {!sidebarCollapsed && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <h1 className="text-lg font-bold whitespace-nowrap">DukeReuse 360</h1>
+              <p className="text-blue-300 text-xs">Smart Reusable System</p>
+            </motion.div>
+          )}
+        </div>
+        {!sidebarCollapsed && (
+          <button
+            onClick={() => setSidebarCollapsed(true)}
+            className="p-2 hover:bg-blue-800/50 rounded-lg transition-colors"
+            title="Collapse sidebar"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+            </svg>
+          </button>
+        )}
       </div>
 
+      {/* Expand button when collapsed */}
+      {sidebarCollapsed && (
+        <button
+          onClick={() => setSidebarCollapsed(false)}
+          className="mx-auto mt-2 p-2 hover:bg-blue-800/50 rounded-lg transition-colors"
+          title="Expand sidebar"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+          </svg>
+        </button>
+      )}
+
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className={`flex-1 ${sidebarCollapsed ? 'p-2' : 'p-4'} space-y-1`}>
         {navItems.map(item => (
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${activeTab === item.id
-              ? 'bg-blue-800 text-white'
-              : 'text-blue-200 hover:bg-blue-800/50'
+            className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center' : ''} gap-3 ${sidebarCollapsed ? 'px-2 py-3' : 'px-4 py-3'} rounded-xl transition-all duration-200 group relative ${activeTab === item.id
+              ? 'bg-blue-700/80 text-white shadow-lg'
+              : 'text-blue-200 hover:bg-blue-800/50 hover:text-white'
               }`}
+            title={sidebarCollapsed ? item.label : undefined}
           >
-            <span className="text-xl">{item.icon}</span>
-            <span className="font-medium">{item.label}</span>
+            <span className={`${sidebarCollapsed ? 'text-2xl' : 'text-xl'} transition-transform group-hover:scale-110`}>{item.icon}</span>
+            {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
+            {activeTab === item.id && (
+              <motion.div
+                layoutId="activeTab"
+                className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-green-400 rounded-r-full"
+              />
+            )}
           </button>
         ))}
       </nav>
 
-      {/* User Info */}
-      <div className="p-4 border-t border-blue-800">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-700 rounded-full flex items-center justify-center">
-            👤
-          </div>
-          <div>
-            <p className="font-medium">{userData.name}</p>
-            <p className="text-blue-300 text-sm">{userData.dorm}</p>
+      {/* Quick Actions */}
+      {!sidebarCollapsed && (
+        <div className="p-4 border-t border-blue-800/50">
+          <p className="text-blue-300 text-xs uppercase tracking-wide mb-3">Quick Actions</p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => openScanner('checkout')}
+              className="p-3 bg-blue-800/50 hover:bg-blue-700 rounded-xl transition-all hover:scale-105 text-center"
+            >
+              <span className="text-lg block">📷</span>
+              <span className="text-xs text-blue-200">Checkout</span>
+            </button>
+            <button
+              onClick={() => openScanner('return')}
+              className="p-3 bg-green-600/80 hover:bg-green-600 rounded-xl transition-all hover:scale-105 text-center"
+            >
+              <span className="text-lg block">✅</span>
+              <span className="text-xs text-green-100">Return</span>
+            </button>
           </div>
         </div>
+      )}
+
+      {/* User Info */}
+      <div className={`${sidebarCollapsed ? 'p-2' : 'p-4'} border-t border-blue-800/50`}>
+        <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'gap-3'}`}>
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-sm font-bold shadow-lg">
+            {userData.name.charAt(0)}
+          </div>
+          {!sidebarCollapsed && (
+            <div className="overflow-hidden">
+              <p className="font-medium truncate">{userData.name}</p>
+              <p className="text-blue-300 text-sm truncate">{userData.dorm}</p>
+            </div>
+          )}
+        </div>
       </div>
-    </aside>
+    </motion.aside>
   )
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Desktop Sidebar */}
       <DesktopSidebar />
 
       {/* Main Content Area */}
-      <div className="lg:pl-64">
-        {/* Mobile Status Bar */}
-        <div className="lg:hidden bg-blue-900 text-white px-4 py-2 flex justify-between text-sm sticky top-0 z-40">
-          <span>9:41</span>
-          <span className="font-semibold">DukeReuse 360</span>
-          <span>🔋 89%</span>
-        </div>
-
+      <motion.div
+        initial={false}
+        animate={{ paddingLeft: sidebarCollapsed ? 80 : 256 }}
+        transition={{ duration: 0.2, ease: 'easeInOut' }}
+        className="min-h-screen lg:block hidden"
+      >
         {/* Desktop Header */}
-        <header className="hidden lg:flex lg:items-center lg:justify-between bg-white border-b border-gray-200 px-8 py-4 sticky top-0 z-40">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-800 capitalize">{activeTab}</h2>
-          </div>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setShowNotifications(true)}
-              className="relative p-2 hover:bg-gray-100 rounded-full transition"
-            >
-              <span className="text-2xl">🔔</span>
-              {unreadCount > 0 && (
-                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                  {unreadCount}
-                </span>
-              )}
-            </button>
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">👤</div>
-              <span className="font-medium">{userData.name}</span>
+        <header className="bg-white/80 backdrop-blur-lg border-b border-gray-200/50 px-8 py-4 sticky top-0 z-40 shadow-sm">
+          <div className="flex items-center justify-between max-w-7xl mx-auto">
+            <div className="flex items-center gap-4">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800 capitalize flex items-center gap-2">
+                  {navItems.find(item => item.id === activeTab)?.icon}
+                  {activeTab}
+                </h2>
+                <p className="text-gray-500 text-sm">Welcome back, {userData.name}!</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              {/* Search Bar */}
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className="w-64 pl-10 pr-4 py-2 bg-gray-100 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                />
+                <svg className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              {/* Notification Button */}
+              <button
+                onClick={() => setShowNotifications(true)}
+                className="relative p-3 hover:bg-gray-100 rounded-xl transition-all hover:shadow-md"
+              >
+                <span className="text-xl">🔔</span>
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center animate-pulse">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+              {/* Divider */}
+              <div className="w-px h-8 bg-gray-200"></div>
+              {/* User Menu */}
+              <div className="flex items-center gap-3 pl-2 pr-4 py-2 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all cursor-pointer">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold shadow-md">
+                  {userData.name.charAt(0)}
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">{userData.name}</p>
+                  <p className="text-xs text-gray-500">{userData.stats.points} points</p>
+                </div>
+                <svg className="w-4 h-4 text-gray-400 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
             </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <main className="p-4 lg:p-8 pb-24 lg:pb-8">
+        <main className="p-8 pb-8">
+          <div className="max-w-7xl mx-auto">
+            {activeTab === 'home' && <HomeScreen />}
+            {activeTab === 'impact' && <ImpactScreen />}
+            {activeTab === 'challenges' && <ChallengesScreen />}
+            {activeTab === 'profile' && <ProfileScreen />}
+          </div>
+        </main>
+      </motion.div>
+
+      {/* Mobile Layout */}
+      <div className="lg:hidden">
+        {/* Mobile Status Bar */}
+        <div className="bg-blue-900 text-white px-4 py-2 flex justify-between text-sm sticky top-0 z-40">
+          <span>9:41</span>
+          <span className="font-semibold">DukeReuse 360</span>
+          <span>🔋 89%</span>
+        </div>
+
+        {/* Mobile Page Content */}
+        <main className="p-4 pb-24">
           <div className="max-w-6xl mx-auto">
             {activeTab === 'home' && <HomeScreen />}
             {activeTab === 'impact' && <ImpactScreen />}
