@@ -141,6 +141,16 @@ const Icons = {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3L3 12h4v8h10v-8h4L12 3z" />
     </svg>
   ),
+  utensils: (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2v6m0 0v14m0-14h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2h-4m0 6H8c-1.1 0-2-.9-2-2V4c0-1.1-.9-2 2-2h4" />
+    </svg>
+  ),
+  clock: (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  ),
 }
 
 export default function DukeReuseApp() {
@@ -160,6 +170,30 @@ export default function DukeReuseApp() {
   const [showCustomization, setShowCustomization] = useState(false)
   const [expandedChallenge, setExpandedChallenge] = useState<number | null>(null)
   const [showReturnBinMap, setShowReturnBinMap] = useState(false)
+  const [userRole, setUserRole] = useState<'student' | 'admin' | 'facility'>('student')
+  const [showPreorderModal, setShowPreorderModal] = useState(false)
+  const [selectedMealTime, setSelectedMealTime] = useState<'lunch' | 'dinner'>('lunch')
+
+  // Live stats for admin dashboard (mock data with simulated updates)
+  const [liveStats, setLiveStats] = useState({
+    containersOut: 847,
+    containersReturned: 12453,
+    activeUsers: 2341,
+    avgReturnTime: '4.2 hrs',
+    todayCheckouts: 234,
+    todayReturns: 198,
+    lostContainers: 23,
+    washingQueue: 156,
+  })
+
+  // Simulated live activity feed
+  const [activityFeed, setActivityFeed] = useState([
+    { id: 1, type: 'checkout', user: 'Student #4521', location: 'West Union', time: '2 sec ago', container: 'DU-2026-891' },
+    { id: 2, type: 'return', user: 'Student #3892', location: 'Brodhead', time: '15 sec ago', container: 'DU-2026-445' },
+    { id: 3, type: 'checkout', user: 'Student #7234', location: 'Penn Pavilion', time: '28 sec ago', container: 'DU-2026-112' },
+    { id: 4, type: 'return', user: 'Student #1567', location: 'West Union', time: '45 sec ago', container: 'DU-2026-667' },
+    { id: 5, type: 'wash_complete', user: 'System', location: 'Central Kitchen', time: '1 min ago', container: 'Batch #45 (50 units)' },
+  ])
 
   // Demo container for testing - this would be assigned to the user
   const DEMO_CONTAINER_ID = 'DU-2026-042'
@@ -289,6 +323,7 @@ export default function DukeReuseApp() {
 
   const navItems = [
     { id: 'home', icon: Icons.home, label: 'Home' },
+    { id: 'preorder', icon: Icons.utensils, label: 'Preorder' },
     { id: 'rewards', icon: Icons.gift, label: 'Rewards' },
     { id: 'challenges', icon: Icons.trophy, label: 'Challenges' },
     { id: 'profile', icon: Icons.user, label: 'Profile' }
@@ -451,6 +486,14 @@ export default function DukeReuseApp() {
             >
               {Icons.sparkles}
               <span>Cleaning Process</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('preorder')}
+              className="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:from-orange-600 hover:to-amber-600 transition"
+            >
+              {Icons.utensils}
+              <span>Preorder Lunch</span>
+              <span className="ml-auto text-xs bg-white/20 px-2 py-0.5 rounded">+10 pts</span>
             </button>
           </div>
         </div>
@@ -965,6 +1008,483 @@ export default function DukeReuseApp() {
           <span className="text-gray-700">Help & How It Works</span>
           {Icons.chevronRight}
         </button>
+      </div>
+    </div>
+  )
+
+  // Preorder Screen
+  const PreorderScreen = () => {
+    const [selectedLocation, setSelectedLocation] = useState('west-union')
+    const [selectedItems, setSelectedItems] = useState<string[]>([])
+    const [pickupTime, setPickupTime] = useState('12:00')
+
+    const menuItems = [
+      { id: 'bowl-1', name: 'Teriyaki Chicken Bowl', location: 'west-union', station: 'Asian Kitchen', price: 'Meal Swipe', calories: 520, tags: ['Protein', 'Rice'], image: '🍛' },
+      { id: 'bowl-2', name: 'Mediterranean Falafel Bowl', location: 'west-union', station: 'Mediterranean', price: 'Meal Swipe', calories: 480, tags: ['Vegetarian', 'Healthy'], image: '🥙' },
+      { id: 'sandwich-1', name: 'Grilled Chicken Sandwich', location: 'west-union', station: 'Grill', price: 'Meal Swipe', calories: 560, tags: ['Protein'], image: '🥪' },
+      { id: 'salad-1', name: 'Caesar Salad with Salmon', location: 'west-union', station: 'Salad Bar', price: 'Meal Swipe', calories: 420, tags: ['Protein', 'Healthy', 'Low-Carb'], image: '🥗' },
+      { id: 'pasta-1', name: 'Pasta Primavera', location: 'brodhead', station: 'Pasta Station', price: 'Meal Swipe', calories: 620, tags: ['Vegetarian'], image: '🍝' },
+      { id: 'burger-1', name: 'Black Bean Burger', location: 'brodhead', station: 'Grill', price: 'Meal Swipe', calories: 490, tags: ['Vegetarian', 'Protein'], image: '🍔' },
+      { id: 'stir-fry-1', name: 'Veggie Stir Fry', location: 'penn', station: 'Wok Station', price: 'Meal Swipe', calories: 380, tags: ['Vegan', 'Healthy'], image: '🥘' },
+      { id: 'pizza-1', name: 'Margherita Pizza Slice', location: 'penn', station: 'Pizza', price: '$4.50', calories: 320, tags: ['Vegetarian'], image: '🍕' },
+    ]
+
+    const locations = [
+      { id: 'west-union', name: 'West Union', hours: '11am - 2pm, 5pm - 8pm' },
+      { id: 'brodhead', name: 'Brodhead Center', hours: '11am - 3pm, 5pm - 9pm' },
+      { id: 'penn', name: 'Penn Pavilion', hours: '11am - 2pm' },
+    ]
+
+    const timeSlots = ['11:30', '12:00', '12:30', '13:00', '13:30', '17:30', '18:00', '18:30', '19:00']
+
+    const filteredItems = menuItems.filter(item => item.location === selectedLocation)
+
+    const toggleItem = (id: string) => {
+      setSelectedItems(prev =>
+        prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+      )
+    }
+
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-xl font-semibold text-gray-900 lg:text-2xl">Preorder Lunch</h1>
+            <p className="text-sm text-gray-500 mt-1">Skip the line with reusable containers</p>
+          </div>
+          <div className="flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1.5 rounded-full">
+            <span className="text-lg">🍱</span>
+            <span className="text-sm font-medium">+10 pts per preorder</span>
+          </div>
+        </div>
+
+        {/* How Preorder Works Banner */}
+        <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-4 border border-blue-100">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">✨</span>
+            <div>
+              <h3 className="font-medium text-gray-900">How Preorder Works</h3>
+              <ol className="text-sm text-gray-600 mt-2 space-y-1">
+                <li>1. Select your meal and pickup time</li>
+                <li>2. We&apos;ll prepare it in a reusable container</li>
+                <li>3. Skip the line at the pickup station</li>
+                <li>4. Return container within 24hrs</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        {/* Location & Time Selection */}
+        <div className="grid lg:grid-cols-2 gap-4">
+          <div className="bg-white rounded-xl p-4 border border-gray-200">
+            <h2 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+              {Icons.location}
+              <span>Pickup Location</span>
+            </h2>
+            <div className="space-y-2">
+              {locations.map(loc => (
+                <button
+                  key={loc.id}
+                  onClick={() => setSelectedLocation(loc.id)}
+                  className={`w-full text-left p-3 rounded-lg border transition ${
+                    selectedLocation === loc.id
+                      ? 'bg-blue-50 border-blue-300 text-blue-800'
+                      : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                  }`}
+                >
+                  <p className="font-medium">{loc.name}</p>
+                  <p className="text-sm text-gray-500">{loc.hours}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl p-4 border border-gray-200">
+            <h2 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+              {Icons.clock}
+              <span>Pickup Time</span>
+            </h2>
+            <div className="grid grid-cols-3 gap-2">
+              {timeSlots.map(time => (
+                <button
+                  key={time}
+                  onClick={() => setPickupTime(time)}
+                  className={`p-2 rounded-lg border text-sm transition ${
+                    pickupTime === time
+                      ? 'bg-blue-600 border-blue-600 text-white'
+                      : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                  }`}
+                >
+                  {time}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-gray-500 mt-3">
+              Order at least 30 min before pickup time
+            </p>
+          </div>
+        </div>
+
+        {/* Menu Items */}
+        <div className="bg-white rounded-xl p-4 border border-gray-200">
+          <h2 className="font-medium text-gray-900 mb-4">
+            Available at {locations.find(l => l.id === selectedLocation)?.name}
+          </h2>
+          <div className="grid lg:grid-cols-2 gap-3">
+            {filteredItems.map(item => (
+              <button
+                key={item.id}
+                onClick={() => toggleItem(item.id)}
+                className={`text-left p-4 rounded-xl border transition ${
+                  selectedItems.includes(item.id)
+                    ? 'bg-green-50 border-green-300 ring-2 ring-green-200'
+                    : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                }`}
+              >
+                <div className="flex gap-3">
+                  <span className="text-3xl">{item.image}</span>
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between">
+                      <h3 className="font-medium text-gray-900">{item.name}</h3>
+                      {selectedItems.includes(item.id) && (
+                        <span className="text-green-600">{Icons.check}</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-500">{item.station}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                        {item.price}
+                      </span>
+                      <span className="text-xs text-gray-400">{item.calories} cal</span>
+                    </div>
+                    <div className="flex gap-1 mt-2 flex-wrap">
+                      {item.tags.map(tag => (
+                        <span key={tag} className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Order Summary & Submit */}
+        {selectedItems.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="sticky bottom-20 lg:bottom-4 bg-[#001A57] rounded-xl p-4 text-white shadow-xl"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-blue-200 text-sm">Your Order</p>
+                <p className="font-semibold">
+                  {selectedItems.length} item{selectedItems.length > 1 ? 's' : ''} · Pickup at {pickupTime}
+                </p>
+                <p className="text-sm text-blue-200">
+                  {locations.find(l => l.id === selectedLocation)?.name}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowPreorderModal(true)
+                }}
+                className="bg-white text-[#001A57] px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
+              >
+                Confirm Order
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </div>
+    )
+  }
+
+  // Admin Dashboard
+  const AdminDashboard = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-xl font-semibold text-gray-900 lg:text-2xl">Admin Dashboard</h1>
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+          <span className="text-sm text-green-600">Live</span>
+        </div>
+      </div>
+
+      {/* Live Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl p-4 border border-gray-200">
+          <div className="flex items-center justify-between">
+            <span className="text-2xl">🍱</span>
+            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Live</span>
+          </div>
+          <p className="text-3xl font-bold text-gray-900 mt-2">{liveStats.containersOut}</p>
+          <p className="text-sm text-gray-500">Containers Out</p>
+        </div>
+        <div className="bg-white rounded-xl p-4 border border-gray-200">
+          <div className="flex items-center justify-between">
+            <span className="text-2xl">✅</span>
+            <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Today</span>
+          </div>
+          <p className="text-3xl font-bold text-green-600 mt-2">{liveStats.todayReturns}</p>
+          <p className="text-sm text-gray-500">Returns Today</p>
+        </div>
+        <div className="bg-white rounded-xl p-4 border border-gray-200">
+          <div className="flex items-center justify-between">
+            <span className="text-2xl">👥</span>
+            <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">Active</span>
+          </div>
+          <p className="text-3xl font-bold text-purple-600 mt-2">{liveStats.activeUsers}</p>
+          <p className="text-sm text-gray-500">Active Users</p>
+        </div>
+        <div className="bg-white rounded-xl p-4 border border-gray-200">
+          <div className="flex items-center justify-between">
+            <span className="text-2xl">⏱️</span>
+          </div>
+          <p className="text-3xl font-bold text-gray-900 mt-2">{liveStats.avgReturnTime}</p>
+          <p className="text-sm text-gray-500">Avg Return Time</p>
+        </div>
+      </div>
+
+      {/* Live Activity Feed */}
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="p-4 border-b bg-gray-50 flex justify-between items-center">
+          <h2 className="font-medium text-gray-900">Live Activity Feed</h2>
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            Real-time
+          </div>
+        </div>
+        <div className="divide-y max-h-80 overflow-y-auto">
+          {activityFeed.map((activity) => (
+            <div key={activity.id} className="p-4 flex items-center gap-4 hover:bg-gray-50">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                activity.type === 'checkout' ? 'bg-blue-100 text-blue-600' :
+                activity.type === 'return' ? 'bg-green-100 text-green-600' :
+                'bg-purple-100 text-purple-600'
+              }`}>
+                {activity.type === 'checkout' ? '📤' : activity.type === 'return' ? '📥' : '🧼'}
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-gray-900">
+                  {activity.type === 'checkout' ? 'Container Checked Out' :
+                   activity.type === 'return' ? 'Container Returned' : 'Wash Complete'}
+                </p>
+                <p className="text-sm text-gray-500">{activity.user} · {activity.location}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-gray-400">{activity.time}</p>
+                <p className="text-xs font-mono text-gray-500">{activity.container}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Location Status */}
+      <div className="grid lg:grid-cols-2 gap-4">
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
+          <h2 className="font-medium text-gray-900 mb-4">Location Status</h2>
+          <div className="space-y-3">
+            {[
+              { name: 'West Union', available: 45, inUse: 23, washing: 12 },
+              { name: 'Brodhead Center', available: 32, inUse: 18, washing: 8 },
+              { name: 'Penn Pavilion', available: 28, inUse: 15, washing: 5 },
+              { name: 'Marketplace', available: 38, inUse: 20, washing: 10 },
+            ].map((loc, i) => (
+              <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <span className="font-medium text-gray-900">{loc.name}</span>
+                <div className="flex gap-4 text-sm">
+                  <span className="text-green-600">{loc.available} ready</span>
+                  <span className="text-blue-600">{loc.inUse} out</span>
+                  <span className="text-purple-600">{loc.washing} washing</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
+          <h2 className="font-medium text-gray-900 mb-4">Alerts</h2>
+          <div className="space-y-3">
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center gap-2">
+                <span>⚠️</span>
+                <p className="font-medium text-red-800">Low Stock Alert</p>
+              </div>
+              <p className="text-sm text-red-600 mt-1">Penn Pavilion running low on containers</p>
+            </div>
+            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="flex items-center gap-2">
+                <span>🕐</span>
+                <p className="font-medium text-yellow-800">Overdue Returns</p>
+              </div>
+              <p className="text-sm text-yellow-600 mt-1">23 containers overdue by 24+ hours</p>
+            </div>
+            <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-center gap-2">
+                <span>📈</span>
+                <p className="font-medium text-green-800">Usage Spike</p>
+              </div>
+              <p className="text-sm text-green-600 mt-1">15% increase in usage vs last week</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+
+  // Facility Dashboard
+  const FacilityDashboard = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-xl font-semibold text-gray-900 lg:text-2xl">Facility Operations</h1>
+        <span className="text-sm bg-purple-100 text-purple-700 px-3 py-1 rounded-full">Kitchen Staff View</span>
+      </div>
+
+      {/* Washing Queue */}
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="p-4 border-b bg-purple-50 flex justify-between items-center">
+          <h2 className="font-medium text-gray-900">🧼 Washing Queue</h2>
+          <span className="text-2xl font-bold text-purple-600">{liveStats.washingQueue} containers</span>
+        </div>
+        <div className="p-4">
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            <div className="text-center p-4 bg-yellow-50 rounded-lg">
+              <p className="text-3xl font-bold text-yellow-600">78</p>
+              <p className="text-sm text-gray-600">Pending Wash</p>
+            </div>
+            <div className="text-center p-4 bg-blue-50 rounded-lg">
+              <p className="text-3xl font-bold text-blue-600">45</p>
+              <p className="text-sm text-gray-600">In Dishwasher</p>
+            </div>
+            <div className="text-center p-4 bg-green-50 rounded-lg">
+              <p className="text-3xl font-bold text-green-600">33</p>
+              <p className="text-sm text-gray-600">Ready to Deploy</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button className="flex-1 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+              Start New Batch
+            </button>
+            <button className="flex-1 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+              Mark Batch Complete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Container Inventory */}
+      <div className="grid lg:grid-cols-2 gap-4">
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
+          <h2 className="font-medium text-gray-900 mb-4">Container Inventory</h2>
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-gray-600">Total Containers</span>
+                <span className="font-medium">1,250</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div className="bg-[#001A57] rounded-full h-3" style={{ width: '100%' }}></div>
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-gray-600">In Circulation</span>
+                <span className="font-medium text-blue-600">847 (68%)</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div className="bg-blue-500 rounded-full h-3" style={{ width: '68%' }}></div>
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-gray-600">Available Clean</span>
+                <span className="font-medium text-green-600">356 (28%)</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div className="bg-green-500 rounded-full h-3" style={{ width: '28%' }}></div>
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-gray-600">Damaged/Lost</span>
+                <span className="font-medium text-red-600">47 (4%)</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div className="bg-red-500 rounded-full h-3" style={{ width: '4%' }}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
+          <h2 className="font-medium text-gray-900 mb-4">Quick Actions</h2>
+          <div className="space-y-2">
+            <button className="w-full p-3 bg-gray-100 rounded-lg text-left hover:bg-gray-200 transition flex items-center gap-3">
+              <span className="text-xl">📦</span>
+              <div>
+                <p className="font-medium text-gray-900">Receive New Containers</p>
+                <p className="text-sm text-gray-500">Log incoming inventory</p>
+              </div>
+            </button>
+            <button className="w-full p-3 bg-gray-100 rounded-lg text-left hover:bg-gray-200 transition flex items-center gap-3">
+              <span className="text-xl">🔧</span>
+              <div>
+                <p className="font-medium text-gray-900">Report Damaged</p>
+                <p className="text-sm text-gray-500">Mark containers for repair</p>
+              </div>
+            </button>
+            <button className="w-full p-3 bg-gray-100 rounded-lg text-left hover:bg-gray-200 transition flex items-center gap-3">
+              <span className="text-xl">🚚</span>
+              <div>
+                <p className="font-medium text-gray-900">Transfer Containers</p>
+                <p className="text-sm text-gray-500">Move between locations</p>
+              </div>
+            </button>
+            <button className="w-full p-3 bg-gray-100 rounded-lg text-left hover:bg-gray-200 transition flex items-center gap-3">
+              <span className="text-xl">📊</span>
+              <div>
+                <p className="font-medium text-gray-900">Generate Report</p>
+                <p className="text-sm text-gray-500">Daily/weekly statistics</p>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Batches */}
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="p-4 border-b bg-gray-50">
+          <h2 className="font-medium text-gray-900">Recent Wash Batches</h2>
+        </div>
+        <div className="divide-y">
+          {[
+            { id: 'B-2026-045', count: 50, time: '10 min ago', status: 'complete', temp: '180°F' },
+            { id: 'B-2026-044', count: 48, time: '45 min ago', status: 'complete', temp: '180°F' },
+            { id: 'B-2026-043', count: 52, time: '1.5 hrs ago', status: 'complete', temp: '180°F' },
+            { id: 'B-2026-042', count: 45, time: '2 hrs ago', status: 'complete', temp: '180°F' },
+          ].map((batch, i) => (
+            <div key={i} className="p-4 flex items-center justify-between hover:bg-gray-50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                  ✓
+                </div>
+                <div>
+                  <p className="font-medium text-gray-900">Batch {batch.id}</p>
+                  <p className="text-sm text-gray-500">{batch.count} containers · {batch.temp}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-green-600 font-medium">Complete</p>
+                <p className="text-xs text-gray-400">{batch.time}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
@@ -1749,6 +2269,103 @@ export default function DukeReuseApp() {
     )
   }
 
+  // Preorder Confirmation Modal
+  const PreorderConfirmationModal = () => (
+    <AnimatePresence>
+      {showPreorderModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowPreorderModal(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0.9 }}
+            className="bg-white rounded-xl max-w-md w-full overflow-hidden"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Success Header */}
+            <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-6 text-white text-center">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-4xl">🎉</span>
+              </div>
+              <h2 className="text-2xl font-bold mb-2">Order Confirmed!</h2>
+              <p className="text-green-100">Your meal will be ready for pickup</p>
+            </div>
+
+            {/* Order Details */}
+            <div className="p-6 space-y-4">
+              <div className="bg-gray-50 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm text-gray-500">Order #</span>
+                  <span className="font-mono font-medium text-gray-900">PRE-2026-{Math.floor(Math.random() * 9000) + 1000}</span>
+                </div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm text-gray-500">Pickup Location</span>
+                  <span className="font-medium text-gray-900">West Union</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-500">Pickup Time</span>
+                  <span className="font-medium text-gray-900">12:00 PM</span>
+                </div>
+              </div>
+
+              {/* Container Info */}
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">🍱</span>
+                  <div>
+                    <h3 className="font-medium text-blue-900">Reusable Container</h3>
+                    <p className="text-sm text-blue-700 mt-1">
+                      Your meal will be packed in a reusable container. Remember to return it within 24 hours!
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Points Earned */}
+              <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
+                <p className="text-green-700 font-medium">+10 points for preordering with reusable!</p>
+              </div>
+
+              {/* Instructions */}
+              <div className="text-sm text-gray-600">
+                <h3 className="font-medium text-gray-900 mb-2">Pickup Instructions:</h3>
+                <ol className="space-y-1 list-decimal list-inside">
+                  <li>Go to the &quot;Preorder Pickup&quot; station</li>
+                  <li>Show your order number or scan your Duke ID</li>
+                  <li>Grab your meal and enjoy!</li>
+                </ol>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 border-t flex gap-3">
+              <button
+                onClick={() => setShowPreorderModal(false)}
+                className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-medium"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  setShowPreorderModal(false)
+                  setActiveTab('home')
+                }}
+                className="flex-1 py-3 bg-[#001A57] text-white rounded-lg hover:bg-[#00296B] transition font-medium"
+              >
+                Back to Home
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+
   // Return Confirmation Modal
   const ReturnConfirmation = () => (
     <AnimatePresence>
@@ -1854,9 +2471,37 @@ export default function DukeReuseApp() {
         {sidebarCollapsed ? Icons.chevronRight : Icons.chevronLeft}
       </button>
 
+      {/* Role Switcher */}
+      {!sidebarCollapsed && (
+        <div className="p-2 border-b border-blue-800">
+          <p className="text-xs text-blue-300 mb-2 px-2">Switch View</p>
+          <div className="space-y-1">
+            {[
+              { id: 'student', label: 'Student', icon: '👤' },
+              { id: 'admin', label: 'Admin', icon: '👔' },
+              { id: 'facility', label: 'Facility', icon: '🏭' },
+            ].map((role) => (
+              <button
+                key={role.id}
+                onClick={() => {
+                  setUserRole(role.id as 'student' | 'admin' | 'facility')
+                  setActiveTab('home')
+                }}
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition ${
+                  userRole === role.id ? 'bg-blue-600 text-white' : 'text-blue-200 hover:bg-blue-800/50'
+                }`}
+              >
+                <span>{role.icon}</span>
+                <span>{role.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Nav */}
       <nav className="flex-1 p-2 space-y-1">
-        {navItems.map(item => (
+        {userRole === 'student' && navItems.map(item => (
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
@@ -1869,18 +2514,54 @@ export default function DukeReuseApp() {
             {!sidebarCollapsed && <span className="text-sm">{item.label}</span>}
           </button>
         ))}
+        {userRole === 'admin' && (
+          <>
+            <button
+              onClick={() => setActiveTab('home')}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition ${
+                activeTab === 'home' ? 'bg-blue-800' : 'hover:bg-blue-800/50'
+              } ${sidebarCollapsed ? 'justify-center' : ''}`}
+            >
+              {Icons.chart}
+              {!sidebarCollapsed && <span className="text-sm">Dashboard</span>}
+            </button>
+            {!sidebarCollapsed && (
+              <p className="text-xs text-blue-400 px-3 pt-2">Admin views live container data</p>
+            )}
+          </>
+        )}
+        {userRole === 'facility' && (
+          <>
+            <button
+              onClick={() => setActiveTab('home')}
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition ${
+                activeTab === 'home' ? 'bg-blue-800' : 'hover:bg-blue-800/50'
+              } ${sidebarCollapsed ? 'justify-center' : ''}`}
+            >
+              {Icons.container}
+              {!sidebarCollapsed && <span className="text-sm">Operations</span>}
+            </button>
+            {!sidebarCollapsed && (
+              <p className="text-xs text-blue-400 px-3 pt-2">Kitchen staff operations</p>
+            )}
+          </>
+        )}
       </nav>
 
       {/* User */}
       <div className={`p-3 border-t border-blue-800 ${sidebarCollapsed ? 'text-center' : ''}`}>
         <div className={`flex items-center gap-2 ${sidebarCollapsed ? 'justify-center' : ''}`}>
-          <div className="w-8 h-8 bg-blue-700 rounded-full flex items-center justify-center text-sm">
-            {userData.name.charAt(0)}
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
+            userRole === 'student' ? 'bg-blue-700' : userRole === 'admin' ? 'bg-amber-600' : 'bg-purple-600'
+          }`}>
+            {userRole === 'student' ? userData.name.charAt(0) : userRole === 'admin' ? '👔' : '🏭'}
           </div>
           {!sidebarCollapsed && (
             <div className="text-sm">
-              <p className="font-medium">{userData.name}</p>
-              <p className="text-blue-300 text-xs">{userData.stats.points} pts</p>
+              <p className="font-medium">
+                {userRole === 'student' ? userData.name : userRole === 'admin' ? 'Admin User' : 'Kitchen Staff'}
+              </p>
+              <p className="text-blue-300 text-xs capitalize">{userRole} View</p>
             </div>
           )}
         </div>
@@ -1922,10 +2603,17 @@ export default function DukeReuseApp() {
 
         <main className="p-6">
           <div className="max-w-6xl mx-auto">
-            {activeTab === 'home' && <HomeScreen />}
-            {activeTab === 'rewards' && <RewardsScreen />}
-            {activeTab === 'challenges' && <ChallengesScreen />}
-            {activeTab === 'profile' && <ProfileScreen />}
+            {userRole === 'student' && (
+              <>
+                {activeTab === 'home' && <HomeScreen />}
+                {activeTab === 'preorder' && <PreorderScreen />}
+                {activeTab === 'rewards' && <RewardsScreen />}
+                {activeTab === 'challenges' && <ChallengesScreen />}
+                {activeTab === 'profile' && <ProfileScreen />}
+              </>
+            )}
+            {userRole === 'admin' && <AdminDashboard />}
+            {userRole === 'facility' && <FacilityDashboard />}
           </div>
         </main>
       </motion.div>
@@ -1933,7 +2621,22 @@ export default function DukeReuseApp() {
       {/* Mobile */}
       <div className="lg:hidden">
         <header className="bg-[#001A57] text-white px-4 py-3 flex justify-between items-center sticky top-0 z-40">
-          <span className="font-semibold">DukeReuse</span>
+          <div className="flex items-center gap-2">
+            <span className="font-semibold">DukeReuse</span>
+            {/* Mobile Role Switcher */}
+            <select
+              value={userRole}
+              onChange={(e) => {
+                setUserRole(e.target.value as 'student' | 'admin' | 'facility')
+                setActiveTab('home')
+              }}
+              className="bg-blue-800 text-white text-xs px-2 py-1 rounded border border-blue-600"
+            >
+              <option value="student">👤 Student</option>
+              <option value="admin">👔 Admin</option>
+              <option value="facility">🏭 Facility</option>
+            </select>
+          </div>
           <button onClick={() => setShowNotifications(true)} className="relative">
             {Icons.bell}
             {unreadCount > 0 && (
@@ -1945,29 +2648,38 @@ export default function DukeReuseApp() {
         </header>
 
         <main className="p-4 pb-24">
-          {activeTab === 'home' && <HomeScreen />}
-          {activeTab === 'rewards' && <RewardsScreen />}
-          {activeTab === 'challenges' && <ChallengesScreen />}
-          {activeTab === 'profile' && <ProfileScreen />}
+          {userRole === 'student' && (
+            <>
+              {activeTab === 'home' && <HomeScreen />}
+              {activeTab === 'preorder' && <PreorderScreen />}
+              {activeTab === 'rewards' && <RewardsScreen />}
+              {activeTab === 'challenges' && <ChallengesScreen />}
+              {activeTab === 'profile' && <ProfileScreen />}
+            </>
+          )}
+          {userRole === 'admin' && <AdminDashboard />}
+          {userRole === 'facility' && <FacilityDashboard />}
         </main>
 
-        {/* Bottom Nav */}
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t z-40">
-          <div className="flex justify-around py-2">
-            {navItems.map(item => (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`flex flex-col items-center py-2 px-4 ${
-                  activeTab === item.id ? 'text-[#001A57]' : 'text-gray-400'
-                }`}
-              >
-                {item.icon}
-                <span className="text-xs mt-1">{item.label}</span>
-              </button>
-            ))}
-          </div>
-        </nav>
+        {/* Bottom Nav - Only show for student view */}
+        {userRole === 'student' && (
+          <nav className="fixed bottom-0 left-0 right-0 bg-white border-t z-40">
+            <div className="flex justify-around py-2">
+              {navItems.map(item => (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`flex flex-col items-center py-2 px-4 ${
+                    activeTab === item.id ? 'text-[#001A57]' : 'text-gray-400'
+                  }`}
+                >
+                  {item.icon}
+                  <span className="text-xs mt-1">{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </nav>
+        )}
       </div>
 
       {/* Modals */}
@@ -1981,6 +2693,7 @@ export default function DukeReuseApp() {
       <ReportLostModal />
       <CustomizationModal />
       <ReturnBinMapModal />
+      <PreorderConfirmationModal />
     </div>
   )
 }
