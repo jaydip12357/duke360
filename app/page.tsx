@@ -402,6 +402,33 @@ export default function DukeReuseApp() {
           ))}
         </div>
       </div>
+
+      {/* Explore Features */}
+      <div>
+        <h2 className="font-medium text-gray-900 mb-3">Explore</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            { href: '/food-rescue', icon: '🍕', label: 'Food Rescue', desc: 'Free food nearby' },
+            { href: '/crowd-tracker', icon: '👥', label: 'Crowd Tracker', desc: 'Dining hall busyness' },
+            { href: '/meal-swipe', icon: '🎫', label: 'Swipe Exchange', desc: 'Share meal swipes' },
+            { href: '/campus-map', icon: '🗺️', label: 'Campus Map', desc: 'Sustainability spots' },
+            { href: '/waste-log', icon: '📊', label: 'Waste Log', desc: 'Track food waste' },
+            { href: '/challenges', icon: '🏆', label: 'Challenges', desc: 'Team competitions' },
+            { href: '/recipes', icon: '👨‍🍳', label: 'Recipes', desc: 'Use your leftovers' },
+            { href: '/garden', icon: '🌱', label: 'Garden Hub', desc: 'Grow & compost' },
+          ].map((item, i) => (
+            <a
+              key={i}
+              href={item.href}
+              className="bg-white rounded-xl p-4 border border-gray-200 hover:border-gray-300 hover:shadow-sm transition text-center"
+            >
+              <span className="text-2xl">{item.icon}</span>
+              <p className="font-medium text-gray-900 mt-2 text-sm">{item.label}</p>
+              <p className="text-xs text-gray-500">{item.desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
     </div>
   )
 
