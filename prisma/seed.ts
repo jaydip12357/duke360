@@ -79,6 +79,7 @@ async function main() {
   const users = [
     { id: 'demo-user-1', netId: 'js123', email: 'john.smith@duke.edu', name: 'John Smith', points: 420, totalCheckouts: 42, totalReturns: 40, onTimeReturns: 38, currentStreak: 12, longestStreak: 15 },
     { id: 'demo-user-2', netId: 'em456', email: 'emma.lee@duke.edu', name: 'Emma Lee', points: 380, totalCheckouts: 38, totalReturns: 36, onTimeReturns: 34, currentStreak: 8, longestStreak: 10 },
+    { id: 'demo-user', netId: 'jp789', email: 'jaideep@duke.edu', name: 'Jaideep', points: 847, totalCheckouts: 89, totalReturns: 87, onTimeReturns: 85, currentStreak: 7, longestStreak: 14 },
     { id: 'demo-admin', netId: 'admin', email: 'admin@duke.edu', name: 'Admin User', points: 0, totalCheckouts: 0, totalReturns: 0, onTimeReturns: 0, currentStreak: 0, longestStreak: 0 },
   ]
 
