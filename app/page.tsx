@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import {
   Recycle, Users, Building2, ShieldCheck, ArrowRight,
   Leaf, Clock, Gift, CheckCircle, Sparkles, MapPin,
-  Utensils, Trophy, Send, Info
+  Utensils, Trophy, Send, Info, Play
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -156,11 +156,17 @@ export default function LandingPage() {
               Pre-book your container, skip the wait, and track your environmental impact in real-time.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
               <Link href="#pilot">
                 <Button size="lg" className="bg-[#001A57] hover:bg-[#002D72] text-white px-8 py-6 text-lg">
                   <Gift className="w-5 h-5 mr-2" />
                   Join the Pilot Program
+                </Button>
+              </Link>
+              <Link href="/student">
+                <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg">
+                  <Play className="w-5 h-5 mr-2" />
+                  Try Demo
                 </Button>
               </Link>
               <Link href="#how-it-works">
