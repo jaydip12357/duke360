@@ -2471,37 +2471,9 @@ export default function DukeReuseApp() {
         {sidebarCollapsed ? Icons.chevronRight : Icons.chevronLeft}
       </button>
 
-      {/* Role Switcher */}
-      {!sidebarCollapsed && (
-        <div className="p-2 border-b border-blue-800">
-          <p className="text-xs text-blue-300 mb-2 px-2">Switch View</p>
-          <div className="space-y-1">
-            {[
-              { id: 'student', label: 'Student', icon: '👤' },
-              { id: 'admin', label: 'Admin', icon: '👔' },
-              { id: 'facility', label: 'Facility', icon: '🏭' },
-            ].map((role) => (
-              <button
-                key={role.id}
-                onClick={() => {
-                  setUserRole(role.id as 'student' | 'admin' | 'facility')
-                  setActiveTab('home')
-                }}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition ${
-                  userRole === role.id ? 'bg-blue-600 text-white' : 'text-blue-200 hover:bg-blue-800/50'
-                }`}
-              >
-                <span>{role.icon}</span>
-                <span>{role.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Nav */}
       <nav className="flex-1 p-2 space-y-1">
-        {userRole === 'student' && navItems.map(item => (
+        {navItems.map(item => (
           <button
             key={item.id}
             onClick={() => setActiveTab(item.id)}
@@ -2514,38 +2486,6 @@ export default function DukeReuseApp() {
             {!sidebarCollapsed && <span className="text-sm">{item.label}</span>}
           </button>
         ))}
-        {userRole === 'admin' && (
-          <>
-            <button
-              onClick={() => setActiveTab('home')}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition ${
-                activeTab === 'home' ? 'bg-blue-800' : 'hover:bg-blue-800/50'
-              } ${sidebarCollapsed ? 'justify-center' : ''}`}
-            >
-              {Icons.chart}
-              {!sidebarCollapsed && <span className="text-sm">Dashboard</span>}
-            </button>
-            {!sidebarCollapsed && (
-              <p className="text-xs text-blue-400 px-3 pt-2">Admin views live container data</p>
-            )}
-          </>
-        )}
-        {userRole === 'facility' && (
-          <>
-            <button
-              onClick={() => setActiveTab('home')}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition ${
-                activeTab === 'home' ? 'bg-blue-800' : 'hover:bg-blue-800/50'
-              } ${sidebarCollapsed ? 'justify-center' : ''}`}
-            >
-              {Icons.container}
-              {!sidebarCollapsed && <span className="text-sm">Operations</span>}
-            </button>
-            {!sidebarCollapsed && (
-              <p className="text-xs text-blue-400 px-3 pt-2">Kitchen staff operations</p>
-            )}
-          </>
-        )}
       </nav>
 
       {/* User */}
@@ -2622,20 +2562,7 @@ export default function DukeReuseApp() {
       <div className="lg:hidden">
         <header className="bg-[#001A57] text-white px-4 py-3 flex justify-between items-center sticky top-0 z-40">
           <div className="flex items-center gap-2">
-            <span className="font-semibold">DukeReuse</span>
-            {/* Mobile Role Switcher */}
-            <select
-              value={userRole}
-              onChange={(e) => {
-                setUserRole(e.target.value as 'student' | 'admin' | 'facility')
-                setActiveTab('home')
-              }}
-              className="bg-blue-800 text-white text-xs px-2 py-1 rounded border border-blue-600"
-            >
-              <option value="student">👤 Student</option>
-              <option value="admin">👔 Admin</option>
-              <option value="facility">🏭 Facility</option>
-            </select>
+            <span className="font-semibold">DukeReuse 360</span>
           </div>
           <button onClick={() => setShowNotifications(true)} className="relative">
             {Icons.bell}
@@ -2648,21 +2575,15 @@ export default function DukeReuseApp() {
         </header>
 
         <main className="p-4 pb-24">
-          {userRole === 'student' && (
-            <>
-              {activeTab === 'home' && <HomeScreen />}
-              {activeTab === 'preorder' && <PreorderScreen />}
-              {activeTab === 'rewards' && <RewardsScreen />}
-              {activeTab === 'challenges' && <ChallengesScreen />}
-              {activeTab === 'profile' && <ProfileScreen />}
-            </>
-          )}
-          {userRole === 'admin' && <AdminDashboard />}
-          {userRole === 'facility' && <FacilityDashboard />}
+          {activeTab === 'home' && <HomeScreen />}
+          {activeTab === 'preorder' && <PreorderScreen />}
+          {activeTab === 'rewards' && <RewardsScreen />}
+          {activeTab === 'challenges' && <ChallengesScreen />}
+          {activeTab === 'profile' && <ProfileScreen />}
         </main>
 
-        {/* Bottom Nav - Only show for student view */}
-        {userRole === 'student' && (
+        {/* Bottom Nav */}
+        {(
           <nav className="fixed bottom-0 left-0 right-0 bg-white border-t z-40">
             <div className="flex justify-around py-2">
               {navItems.map(item => (
