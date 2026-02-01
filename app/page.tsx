@@ -360,15 +360,15 @@ export default function LandingPage() {
             {[
               {
                 step: '1',
-                title: 'Book Online',
-                description: 'Reserve your container and pick-up time slot through the app. Skip the line completely!',
+                title: 'Get Your 360Box',
+                description: 'Book online to skip the line, or simply ask for a 360Box at any dining location when ordering your food!',
                 icon: Clock,
                 color: 'bg-blue-500'
               },
               {
                 step: '2',
-                title: 'Pick Up',
-                description: 'Head to your chosen dining location at your scheduled time. Scan your QR code and grab your container.',
+                title: 'Fill It Up',
+                description: 'Get your favorite meal served in the reusable 360Box. Works at any participating campus dining spot!',
                 icon: MapPin,
                 color: 'bg-green-500'
               },
