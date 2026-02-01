@@ -234,7 +234,7 @@ export default function LandingPage() {
             >
               <div className="bg-gradient-to-br from-blue-50 to-white rounded-3xl p-8 shadow-xl">
                 <Image
-                  src="/images/360box.png"
+                  src="/onlybox.jpeg"
                   alt="DukeReuse 360Box - Smart Reusable Container"
                   width={500}
                   height={400}
@@ -312,7 +312,7 @@ export default function LandingPage() {
             viewport={{ once: true }}
           >
             <Image
-              src="/images/comparison.png"
+              src="/comparisonboxes.png"
               alt="Current Liability vs Proposed Asset - Single-use containers vs DukeReuse 360Box"
               width={1200}
               height={500}
