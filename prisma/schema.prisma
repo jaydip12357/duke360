@@ -168,3 +168,20 @@ model SystemStats {
 
   @@index([date])
 }
+
+model PilotSignup {
+  id               String   @id @default(cuid())
+  name             String
+  netId            String   @unique
+  email            String
+  preferredDining  String   // "Broadhead", "West Union", "Marketplace", etc.
+  signupNumber     Int      @default(autoincrement())
+  rewardTier       String   // "tier1" ($10), "tier2" ($5), "none"
+  rewardAmount     Int      @default(0)
+  status           String   @default("pending") // pending, active, completed
+  completedUses    Int      @default(0)
+  rewardPaid       Boolean  @default(false)
+  createdAt        DateTime @default(now())
+
+  @@index([signupNumber])
+}
