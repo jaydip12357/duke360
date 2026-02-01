@@ -341,7 +341,7 @@ export default function DukeReuseApp() {
       {currentContainer && currentContainer.status === 'active' && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
           <div className="flex items-start gap-3">
-            <span className="text-2xl">📦</span>
+            <span className="text-2xl">🍱</span>
             <div className="flex-1">
               <p className="font-medium text-amber-800">You have 1 container to return</p>
               <p className="text-sm text-amber-600 mt-1">Container {currentContainer.id} - Checked out at {currentContainer.checkoutTime}</p>
@@ -389,7 +389,7 @@ export default function DukeReuseApp() {
             {/* Container */}
             <div className={`flex items-center gap-3 p-3 rounded-lg border ${currentContainer ? getStatusInfo(currentContainer.status).bgColor : 'bg-gray-50'} border-opacity-50`}>
               <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                <span className="text-2xl">📦</span>
+                <span className="text-2xl">🍱</span>
               </div>
               <div className="flex-1">
                 <p className="font-medium text-gray-900">Reusable Container</p>
@@ -501,7 +501,7 @@ export default function DukeReuseApp() {
         <h2 className="font-medium text-gray-900 mb-3">This Semester</h2>
         <div className="grid grid-cols-4 gap-4">
           {[
-            { label: 'Reusable Containers', value: userData.stats.containersUsed, icon: '📦' },
+            { label: 'Reusable Containers', value: userData.stats.containersUsed, icon: '🍱' },
             { label: 'Reusable Cups', value: userData.stats.cupsUsed, icon: '☕' },
             { label: 'CO₂ Saved', value: `${userData.stats.co2Prevented}kg`, icon: '🌱' },
             { label: 'Points', value: userData.stats.points, icon: '⭐' },
@@ -1091,7 +1091,7 @@ export default function DukeReuseApp() {
             {/* Container Visual */}
             <div className="text-center mb-6">
               <div className="w-24 h-24 mx-auto bg-blue-50 rounded-2xl flex items-center justify-center mb-3">
-                <span className="text-5xl">📦</span>
+                <span className="text-5xl">🍱</span>
               </div>
               <p className="font-medium text-gray-900">{currentContainer.id}</p>
               <div className="flex items-center justify-center gap-2 mt-1">
@@ -1497,7 +1497,7 @@ export default function DukeReuseApp() {
             {/* Container Preview */}
             <div className="text-center mb-6">
               <div className="w-32 h-32 mx-auto bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl flex items-center justify-center mb-3 border-4 border-blue-200 relative">
-                <span className="text-6xl">📦</span>
+                <span className="text-6xl">🍱</span>
                 <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
                   J
                 </div>
