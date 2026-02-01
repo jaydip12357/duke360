@@ -1009,26 +1009,6 @@ export default function DukeReuseApp() {
           {Icons.chevronRight}
         </button>
       </div>
-
-      {/* Staff Access (Hidden) */}
-      <div className="pt-4 border-t border-gray-100">
-        <p className="text-xs text-gray-400 text-center mb-3">Staff Access</p>
-        <div className="flex justify-center gap-4">
-          <a
-            href="/admin"
-            className="text-xs text-gray-400 hover:text-gray-600 transition"
-          >
-            Admin Dashboard
-          </a>
-          <span className="text-gray-300">|</span>
-          <a
-            href="/facility"
-            className="text-xs text-gray-400 hover:text-gray-600 transition"
-          >
-            Facility Dashboard
-          </a>
-        </div>
-      </div>
     </div>
   )
 
