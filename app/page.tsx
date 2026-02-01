@@ -381,18 +381,21 @@ export default function DukeReuseApp() {
       </div>
 
       {/* Stats Grid - Desktop */}
-      <div className="hidden lg:grid grid-cols-4 gap-4">
-        {[
-          { label: 'Containers', value: userData.stats.containersUsed },
-          { label: 'Cups', value: userData.stats.cupsUsed },
-          { label: 'CO₂ Saved', value: `${userData.stats.co2Prevented}kg` },
-          { label: 'Points', value: userData.stats.points },
-        ].map((stat, i) => (
-          <div key={i} className="bg-white rounded-xl p-4 border border-gray-200 text-center">
-            <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
-            <p className="text-sm text-gray-500">{stat.label}</p>
-          </div>
-        ))}
+      <div className="hidden lg:block">
+        <h2 className="font-medium text-gray-900 mb-3">This Semester</h2>
+        <div className="grid grid-cols-4 gap-4">
+          {[
+            { label: 'Containers', value: userData.stats.containersUsed },
+            { label: 'Cups', value: userData.stats.cupsUsed },
+            { label: 'CO₂ Saved', value: `${userData.stats.co2Prevented}kg` },
+            { label: 'Points', value: userData.stats.points },
+          ].map((stat, i) => (
+            <div key={i} className="bg-white rounded-xl p-4 border border-gray-200 text-center">
+              <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
+              <p className="text-sm text-gray-500">{stat.label}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
