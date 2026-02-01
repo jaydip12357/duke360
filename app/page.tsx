@@ -159,6 +159,7 @@ export default function DukeReuseApp() {
   const [showReportLost, setShowReportLost] = useState(false)
   const [showCustomization, setShowCustomization] = useState(false)
   const [expandedChallenge, setExpandedChallenge] = useState<number | null>(null)
+  const [showReturnBinMap, setShowReturnBinMap] = useState(false)
 
   // Demo container for testing - this would be assigned to the user
   const DEMO_CONTAINER_ID = 'DU-2026-042'
@@ -430,7 +431,10 @@ export default function DukeReuseApp() {
           <h2 className="font-medium text-gray-900 mb-4">Quick Actions</h2>
           <div className="space-y-2">
             <p className="text-xs text-gray-500 mb-2">RFID Auto-Detection at Kiosks</p>
-            <button className="w-full flex items-center gap-3 p-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
+            <button
+              onClick={() => setShowReturnBinMap(true)}
+              className="w-full flex items-center gap-3 p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+            >
               {Icons.location}
               <span>Find Return Bin</span>
             </button>
@@ -1581,6 +1585,170 @@ export default function DukeReuseApp() {
     </AnimatePresence>
   )
 
+  // Return Bin Map Modal
+  const ReturnBinMapModal = () => {
+    const returnBinLocations = [
+      { id: 1, name: 'West Union', area: 'Marketplace', bins: 3, hours: '7am - 10pm', distance: '2 min', status: 'open' },
+      { id: 2, name: 'Brodhead Center', area: 'Main Entrance', bins: 2, hours: '7am - 9pm', distance: '5 min', status: 'open' },
+      { id: 3, name: 'Penn Pavilion', area: 'Food Court', bins: 2, hours: '11am - 8pm', distance: '7 min', status: 'open' },
+      { id: 4, name: 'Marketplace', area: 'East Campus', bins: 2, hours: '7am - 10pm', distance: '12 min', status: 'open' },
+      { id: 5, name: 'The Loop', area: 'Near Perkins', bins: 1, hours: '8am - 6pm', distance: '4 min', status: 'closing soon' },
+      { id: 6, name: 'Twinnie\'s', area: 'Trent Hall', bins: 1, hours: '8am - 11pm', distance: '8 min', status: 'open' },
+    ]
+
+    return (
+      <AnimatePresence>
+        {showReturnBinMap && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto"
+            onClick={() => setShowReturnBinMap(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-white rounded-xl max-w-2xl w-full my-8 overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="p-4 border-b flex justify-between items-center bg-green-600 text-white">
+                <h2 className="text-xl font-semibold">Find Return Bin</h2>
+                <button onClick={() => setShowReturnBinMap(false)} className="p-1 hover:bg-green-700 rounded">
+                  {Icons.x}
+                </button>
+              </div>
+
+              {/* Mock Map */}
+              <div className="relative bg-gradient-to-br from-green-100 to-blue-100 h-64 overflow-hidden">
+                {/* Campus outline */}
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 200">
+                  {/* Roads */}
+                  <path d="M0 100 L400 100" stroke="#d1d5db" strokeWidth="8" fill="none" />
+                  <path d="M200 0 L200 200" stroke="#d1d5db" strokeWidth="8" fill="none" />
+                  <path d="M50 50 L350 50" stroke="#e5e7eb" strokeWidth="4" fill="none" />
+                  <path d="M50 150 L350 150" stroke="#e5e7eb" strokeWidth="4" fill="none" />
+
+                  {/* Buildings */}
+                  <rect x="80" y="60" width="60" height="40" fill="#001A57" rx="4" opacity="0.7" />
+                  <rect x="260" y="60" width="50" height="35" fill="#001A57" rx="4" opacity="0.7" />
+                  <rect x="160" y="110" width="80" height="50" fill="#001A57" rx="4" opacity="0.7" />
+                  <rect x="300" y="120" width="45" height="40" fill="#001A57" rx="4" opacity="0.7" />
+                  <rect x="40" y="130" width="55" height="35" fill="#001A57" rx="4" opacity="0.7" />
+
+                  {/* Return bin markers */}
+                  <g className="cursor-pointer">
+                    <circle cx="110" cy="80" r="12" fill="#16a34a" stroke="white" strokeWidth="2" />
+                    <text x="110" y="84" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">3</text>
+                  </g>
+                  <g className="cursor-pointer">
+                    <circle cx="285" cy="77" r="12" fill="#16a34a" stroke="white" strokeWidth="2" />
+                    <text x="285" y="81" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">2</text>
+                  </g>
+                  <g className="cursor-pointer">
+                    <circle cx="200" cy="135" r="12" fill="#16a34a" stroke="white" strokeWidth="2" />
+                    <text x="200" y="139" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">2</text>
+                  </g>
+                  <g className="cursor-pointer">
+                    <circle cx="322" cy="140" r="12" fill="#16a34a" stroke="white" strokeWidth="2" />
+                    <text x="322" y="144" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">2</text>
+                  </g>
+                  <g className="cursor-pointer">
+                    <circle cx="67" cy="147" r="12" fill="#eab308" stroke="white" strokeWidth="2" />
+                    <text x="67" y="151" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">1</text>
+                  </g>
+                  <g className="cursor-pointer">
+                    <circle cx="170" cy="60" r="12" fill="#16a34a" stroke="white" strokeWidth="2" />
+                    <text x="170" y="64" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">1</text>
+                  </g>
+
+                  {/* You are here marker */}
+                  <circle cx="200" cy="100" r="8" fill="#3b82f6" stroke="white" strokeWidth="2">
+                    <animate attributeName="r" values="8;12;8" dur="2s" repeatCount="indefinite" />
+                  </circle>
+                  <circle cx="200" cy="100" r="20" fill="#3b82f6" opacity="0.2">
+                    <animate attributeName="r" values="20;30;20" dur="2s" repeatCount="indefinite" />
+                  </circle>
+                </svg>
+
+                {/* Legend */}
+                <div className="absolute bottom-2 left-2 bg-white/90 rounded-lg p-2 text-xs">
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-3 h-3 bg-green-600 rounded-full"></div>
+                    <span>Return Bin</span>
+                  </div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <span>Closing Soon</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span>You</span>
+                  </div>
+                </div>
+
+                {/* Nearest label */}
+                <div className="absolute top-2 right-2 bg-green-600 text-white rounded-lg px-3 py-1 text-sm font-medium">
+                  Nearest: West Union (2 min)
+                </div>
+              </div>
+
+              {/* Location List */}
+              <div className="p-4 max-h-64 overflow-y-auto">
+                <h3 className="font-medium text-gray-900 mb-3">All Return Locations</h3>
+                <div className="space-y-2">
+                  {returnBinLocations.map((loc) => (
+                    <div
+                      key={loc.id}
+                      className={`flex items-center justify-between p-3 rounded-lg border ${
+                        loc.status === 'closing soon' ? 'bg-yellow-50 border-yellow-200' : 'bg-gray-50 border-gray-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
+                          loc.status === 'closing soon' ? 'bg-yellow-500' : 'bg-green-600'
+                        }`}>
+                          {loc.bins}
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{loc.name}</p>
+                          <p className="text-sm text-gray-500">{loc.area} · {loc.hours}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium text-gray-900">{loc.distance}</p>
+                        <p className={`text-xs ${loc.status === 'closing soon' ? 'text-yellow-600' : 'text-green-600'}`}>
+                          {loc.status === 'closing soon' ? 'Closing soon' : 'Open'}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="p-4 border-t bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-gray-600">
+                    <span className="font-medium text-green-600">11 bins</span> available across campus
+                  </div>
+                  <button
+                    onClick={() => setShowReturnBinMap(false)}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                  >
+                    Get Directions
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    )
+  }
+
   // Return Confirmation Modal
   const ReturnConfirmation = () => (
     <AnimatePresence>
@@ -1812,6 +1980,7 @@ export default function DukeReuseApp() {
       <ShareImpactModal />
       <ReportLostModal />
       <CustomizationModal />
+      <ReturnBinMapModal />
     </div>
   )
 }
