@@ -174,7 +174,7 @@ export default function LandingPage() {
               <Link href="/student">
                 <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg">
                   <Play className="w-5 h-5 mr-2" />
-                  Try Demo
+                  Try Student App Demo
                 </Button>
               </Link>
               <Link href="#how-it-works">
@@ -185,34 +185,37 @@ export default function LandingPage() {
             </div>
           </motion.div>
 
-          {/* Stats Preview */}
+          {/* Projected Impact */}
           <motion.div
-            className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto"
+            className="mt-16"
             variants={stagger}
             initial="initial"
             animate="animate"
           >
-            {[
-              { label: 'Containers Saved', value: '12,450+', icon: Recycle },
-              { label: 'CO2 Prevented', value: '622 kg', icon: Leaf },
-              { label: 'Active Students', value: '2,340', icon: Users },
-              { label: 'Avg Wait Time', value: '< 2 min', icon: Clock },
-            ].map((stat, i) => (
-              <motion.div
-                key={i}
-                variants={fadeInUp}
-                className="bg-white rounded-xl p-6 shadow-lg border"
-              >
-                <stat.icon className="w-8 h-8 text-green-600 mb-2" />
-                <div className="text-2xl font-bold text-[#001A57]">{stat.value}</div>
-                <div className="text-sm text-gray-500">{stat.label}</div>
-              </motion.div>
-            ))}
+            <p className="text-center text-sm text-gray-500 mb-4">Projected Impact (First Semester)</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+              {[
+                { label: 'Containers to Save', value: '10,000+', icon: Recycle },
+                { label: 'CO2 to Prevent', value: '500 kg', icon: Leaf },
+                { label: 'Target Students', value: '2,000', icon: Users },
+                { label: 'Target Wait Time', value: '< 2 min', icon: Clock },
+              ].map((stat, i) => (
+                <motion.div
+                  key={i}
+                  variants={fadeInUp}
+                  className="bg-white rounded-xl p-6 shadow-lg border"
+                >
+                  <stat.icon className="w-8 h-8 text-green-600 mb-2" />
+                  <div className="text-2xl font-bold text-[#001A57]">{stat.value}</div>
+                  <div className="text-sm text-gray-500">{stat.label}</div>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Dashboard Navigation */}
+      {/* Demo Dashboards */}
       <section className="py-16 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -221,8 +224,8 @@ export default function LandingPage() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-[#001A57] mb-4">Access Your Dashboard</h2>
-            <p className="text-gray-600">Choose your role to get started</p>
+            <h2 className="text-3xl font-bold text-[#001A57] mb-4">Demo Dashboards</h2>
+            <p className="text-gray-600">Explore our platform from different perspectives</p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -260,7 +263,7 @@ export default function LandingPage() {
                       </li>
                     </ul>
                     <Button className="w-full" variant="outline">
-                      Go to Student Dashboard
+                      View Demo
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </CardContent>
@@ -302,7 +305,7 @@ export default function LandingPage() {
                       </li>
                     </ul>
                     <Button className="w-full" variant="outline">
-                      Go to Admin Dashboard
+                      View Demo
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </CardContent>
@@ -344,7 +347,7 @@ export default function LandingPage() {
                       </li>
                     </ul>
                     <Button className="w-full" variant="outline">
-                      Go to Facility Dashboard
+                      View Demo
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </CardContent>
