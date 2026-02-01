@@ -358,58 +358,16 @@ export default function LandingPage() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl font-bold text-[#001A57] mb-4">Demo Dashboards</h2>
-            <p className="text-gray-600">Explore our platform from different perspectives</p>
+            <p className="text-gray-600">Explore admin and facility management views</p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* Student Dashboard */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-            >
-              <Link href="/dashboard">
-                <Card className="h-full hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer border-2 hover:border-[#001A57]">
-                  <CardHeader className="text-center pb-4">
-                    <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <Users className="w-8 h-8 text-[#001A57]" />
-                    </div>
-                    <CardTitle className="text-xl">Student Dashboard</CardTitle>
-                    <CardDescription>
-                      Track your containers, view stats, and earn rewards
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2 text-sm text-gray-600 mb-6">
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                        Book containers in advance
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                        Track environmental impact
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                        Earn points & achievements
-                      </li>
-                    </ul>
-                    <Button className="w-full" variant="outline">
-                      View Demo
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Link>
-            </motion.div>
-
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Admin Dashboard */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.1 }}
             >
               <Link href="/admin">
                 <Card className="h-full hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer border-2 hover:border-[#001A57]">
@@ -451,7 +409,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.2 }}
             >
               <Link href="/facility">
                 <Card className="h-full hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer border-2 hover:border-[#001A57]">
