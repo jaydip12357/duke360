@@ -104,6 +104,11 @@ const Icons = {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
     </svg>
   ),
+  gift: (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+    </svg>
+  ),
 }
 
 export default function DukeReuseApp() {
@@ -259,7 +264,7 @@ export default function DukeReuseApp() {
 
   const navItems = [
     { id: 'home', icon: Icons.home, label: 'Home' },
-    { id: 'impact', icon: Icons.chart, label: 'Impact' },
+    { id: 'rewards', icon: Icons.gift, label: 'Rewards' },
     { id: 'challenges', icon: Icons.trophy, label: 'Challenges' },
     { id: 'profile', icon: Icons.user, label: 'Profile' }
   ]
@@ -516,6 +521,143 @@ export default function DukeReuseApp() {
       </div>
     </div>
   )
+
+  // Rewards Screen
+  const RewardsScreen = () => {
+    const rewards = [
+      { name: 'Free Coffee', icon: '☕', current: 42, target: 50, description: 'At any campus cafe' },
+      { name: 'Free Meal Swipe', icon: '🍽️', current: 89, target: 100, description: 'Use at any dining hall' },
+      { name: 'Duke Store $10', icon: '🎁', current: 150, target: 200, description: 'Gift card credit' },
+      { name: 'Priority Parking', icon: '🅿️', current: 300, target: 500, description: 'One month pass' },
+    ]
+
+    const monthlyWinners = [
+      { name: 'Sarah Chen', dorm: 'Bassett', uses: 156, prize: 'Free Meal Plan Week' },
+      { name: 'Marcus Johnson', dorm: 'Trinity', uses: 143, prize: '$25 Duke Store' },
+      { name: 'Priya Patel', dorm: 'Randolph', uses: 138, prize: 'Coffee Month Pass' },
+    ]
+
+    return (
+      <div className="space-y-6">
+        <h1 className="text-xl font-semibold text-gray-900 lg:text-2xl">Rewards</h1>
+
+        {/* Progress Circles */}
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
+          <h2 className="font-medium text-gray-900 mb-4">Your Progress</h2>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {rewards.map((reward, i) => {
+              const percentage = Math.min((reward.current / reward.target) * 100, 100)
+              const circumference = 2 * Math.PI * 40
+              const strokeDashoffset = circumference - (percentage / 100) * circumference
+
+              return (
+                <div key={i} className="text-center">
+                  <div className="relative inline-flex items-center justify-center">
+                    <svg className="w-24 h-24 transform -rotate-90">
+                      <circle
+                        cx="48"
+                        cy="48"
+                        r="40"
+                        stroke="#E5E7EB"
+                        strokeWidth="8"
+                        fill="none"
+                      />
+                      <circle
+                        cx="48"
+                        cy="48"
+                        r="40"
+                        stroke="#001A57"
+                        strokeWidth="8"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeDasharray={circumference}
+                        strokeDashoffset={strokeDashoffset}
+                        className="transition-all duration-500"
+                      />
+                    </svg>
+                    <span className="absolute text-2xl">{reward.icon}</span>
+                  </div>
+                  <p className="font-medium text-gray-900 mt-2">{reward.name}</p>
+                  <p className="text-sm text-gray-500">{reward.current}/{reward.target} uses</p>
+                  <p className="text-xs text-gray-400 mt-1">{reward.description}</p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Next Reward */}
+        <div className="bg-[#001A57] rounded-xl p-5 text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-blue-200 text-sm">Next reward in</p>
+              <p className="text-3xl font-bold">8 uses</p>
+              <p className="text-blue-200">Free Coffee at any campus cafe</p>
+            </div>
+            <span className="text-5xl">☕</span>
+          </div>
+        </div>
+
+        {/* Monthly Winners */}
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="font-medium text-gray-900">November Winners</h2>
+            <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Most Uses</span>
+          </div>
+          <div className="space-y-3">
+            {monthlyWinners.map((winner, i) => (
+              <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <span className="text-lg font-bold text-gray-400 w-6">
+                    {i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'}
+                  </span>
+                  <div>
+                    <p className="font-medium text-gray-900">{winner.name}</p>
+                    <p className="text-sm text-gray-500">{winner.dorm} · {winner.uses} uses</p>
+                  </div>
+                </div>
+                <span className="text-sm text-green-600 font-medium">{winner.prize}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-gray-400 text-center mt-4">
+            You&apos;re currently #{userData.stats.rank} this month with {userData.stats.containersUsed + userData.stats.cupsUsed} uses
+          </p>
+        </div>
+
+        {/* Available Rewards */}
+        <div className="bg-white rounded-xl p-5 border border-gray-200">
+          <h2 className="font-medium text-gray-900 mb-4">Claim Rewards</h2>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg opacity-50">
+              <div className="flex items-center gap-3">
+                <span className="text-xl">☕</span>
+                <div>
+                  <p className="font-medium text-gray-900">Free Coffee</p>
+                  <p className="text-sm text-gray-500">8 more uses needed</p>
+                </div>
+              </div>
+              <button disabled className="px-3 py-1 bg-gray-200 text-gray-500 rounded text-sm">
+                Locked
+              </button>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+              <div className="flex items-center gap-3">
+                <span className="text-xl">🎫</span>
+                <div>
+                  <p className="font-medium text-gray-900">5% Dining Discount</p>
+                  <p className="text-sm text-green-600">Ready to claim!</p>
+                </div>
+              </div>
+              <button className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700 transition">
+                Claim
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   // Profile Screen
   const ProfileScreen = () => (
@@ -922,7 +1064,7 @@ export default function DukeReuseApp() {
         <main className="p-6">
           <div className="max-w-6xl mx-auto">
             {activeTab === 'home' && <HomeScreen />}
-            {activeTab === 'impact' && <ImpactScreen />}
+            {activeTab === 'rewards' && <RewardsScreen />}
             {activeTab === 'challenges' && <ChallengesScreen />}
             {activeTab === 'profile' && <ProfileScreen />}
           </div>
@@ -945,7 +1087,7 @@ export default function DukeReuseApp() {
 
         <main className="p-4 pb-24">
           {activeTab === 'home' && <HomeScreen />}
-          {activeTab === 'impact' && <ImpactScreen />}
+          {activeTab === 'rewards' && <RewardsScreen />}
           {activeTab === 'challenges' && <ChallengesScreen />}
           {activeTab === 'profile' && <ProfileScreen />}
         </main>
