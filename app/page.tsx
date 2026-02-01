@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import {
-  Recycle, Users, Building2, ShieldCheck, ArrowRight,
-  Leaf, Clock, Gift, CheckCircle, Sparkles, MapPin,
-  Utensils, Trophy, Send, Info, Play
+  Recycle, Users, ArrowRight, Leaf, Clock, Gift,
+  CheckCircle, Sparkles, MapPin, Utensils, Trophy,
+  Send, Info, Play
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -221,11 +221,11 @@ export default function LandingPage() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-[#001A57] mb-4">Access Your Dashboard</h2>
-            <p className="text-gray-600">Choose your role to get started</p>
+            <h2 className="text-3xl font-bold text-[#001A57] mb-4">Get Started</h2>
+            <p className="text-gray-600">Access the student dashboard to track your impact</p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="max-w-md mx-auto">
             {/* Student Dashboard */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -261,90 +261,6 @@ export default function LandingPage() {
                     </ul>
                     <Button className="w-full" variant="outline">
                       Go to Student Dashboard
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Link>
-            </motion.div>
-
-            {/* Admin Dashboard */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              <Link href="/admin">
-                <Card className="h-full hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer border-2 hover:border-[#001A57]">
-                  <CardHeader className="text-center pb-4">
-                    <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <ShieldCheck className="w-8 h-8 text-purple-600" />
-                    </div>
-                    <CardTitle className="text-xl">Admin Dashboard</CardTitle>
-                    <CardDescription>
-                      Monitor operations, inventory, and analytics
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2 text-sm text-gray-600 mb-6">
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                        Real-time inventory tracking
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                        Usage analytics & reports
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                        Manage overdue containers
-                      </li>
-                    </ul>
-                    <Button className="w-full" variant="outline">
-                      Go to Admin Dashboard
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Link>
-            </motion.div>
-
-            {/* Facility Dashboard */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-            >
-              <Link href="/facility">
-                <Card className="h-full hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer border-2 hover:border-[#001A57]">
-                  <CardHeader className="text-center pb-4">
-                    <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <Building2 className="w-8 h-8 text-orange-600" />
-                    </div>
-                    <CardTitle className="text-xl">Facility Dashboard</CardTitle>
-                    <CardDescription>
-                      Manage dining locations and container flow
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2 text-sm text-gray-600 mb-6">
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                        Location inventory status
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                        Washing queue management
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                        Daily operations view
-                      </li>
-                    </ul>
-                    <Button className="w-full" variant="outline">
-                      Go to Facility Dashboard
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </CardContent>
