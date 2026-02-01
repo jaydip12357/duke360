@@ -238,7 +238,7 @@ export default function AboutPage() {
                 Join the Pilot Program
               </Button>
             </Link>
-            <a href="mailto:dukereuse360@duke.edu">
+            <a href="mailto:jva13@duke.edu">
               <Button size="lg" variant="outline" className="gap-2">
                 <Mail className="w-5 h-5" />
                 Contact Us

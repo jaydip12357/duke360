@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import {
   Recycle, Users, Building2, ShieldCheck, ArrowRight,
   Leaf, Clock, Gift, CheckCircle, Sparkles, MapPin,
-  Utensils, Trophy, Send, Info
+  Utensils, Trophy, Send, Info, Play
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -110,8 +110,16 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
+      {/* Make-A-Thon Banner */}
+      <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 px-4 z-50 text-center">
+        <p className="text-sm md:text-base font-medium">
+          <Leaf className="w-4 h-4 inline-block mr-2 -mt-0.5" />
+          This is a project submission for <span className="font-bold">Duke Climate & Sustainability Make-A-Thon 2026</span> — Demo purposes only
+        </p>
+      </div>
+
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 border-b">
+      <nav className="fixed top-10 left-0 right-0 bg-white/80 backdrop-blur-md z-40 border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-2">
@@ -131,7 +139,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4">
+      <section className="pt-40 pb-20 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div
             className="text-center max-w-4xl mx-auto"
@@ -156,11 +164,17 @@ export default function LandingPage() {
               Pre-book your container, skip the wait, and track your environmental impact in real-time.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
               <Link href="#pilot">
                 <Button size="lg" className="bg-[#001A57] hover:bg-[#002D72] text-white px-8 py-6 text-lg">
                   <Gift className="w-5 h-5 mr-2" />
                   Join the Pilot Program
+                </Button>
+              </Link>
+              <Link href="/student">
+                <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg">
+                  <Play className="w-5 h-5 mr-2" />
+                  Try Demo
                 </Button>
               </Link>
               <Link href="#how-it-works">
@@ -360,15 +374,15 @@ export default function LandingPage() {
             {[
               {
                 step: '1',
-                title: 'Book Online',
-                description: 'Reserve your container and pick-up time slot through the app. Skip the line completely!',
+                title: 'Get Your 360Box',
+                description: 'Book online to skip the line, or simply ask for a 360Box at any dining location when ordering your food!',
                 icon: Clock,
                 color: 'bg-blue-500'
               },
               {
                 step: '2',
-                title: 'Pick Up',
-                description: 'Head to your chosen dining location at your scheduled time. Scan your QR code and grab your container.',
+                title: 'Fill It Up',
+                description: 'Get your favorite meal served in the reusable 360Box. Works at any participating campus dining spot!',
                 icon: MapPin,
                 color: 'bg-green-500'
               },
