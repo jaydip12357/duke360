@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Html5Qrcode } from 'html5-qrcode'
 
 // Types
 interface UserData {
@@ -52,6 +53,9 @@ export default function DukeReuseApp() {
   const [showReturnConfirmation, setShowReturnConfirmation] = useState(false)
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [showNotifications, setShowNotifications] = useState(false)
+  const [showQRScanner, setShowQRScanner] = useState(false)
+  const [scanMode, setScanMode] = useState<'checkout' | 'return'>('return')
+  const [scanResult, setScanResult] = useState<{ success: boolean; message: string } | null>(null)
 
   // Sample user data
   const [userData] = useState<UserData>({
@@ -144,6 +148,45 @@ export default function DukeReuseApp() {
     return () => clearInterval(reminderInterval)
   }, [userData.container.status, userData.container.dueIn, addNotification])
 
+  const openScanner = (mode: 'checkout' | 'return') => {
+    setScanMode(mode)
+    setScanResult(null)
+    setShowQRScanner(true)
+  }
+
+  const handleScanSuccess = (decodedText: string) => {
+    // Simulate processing the QR code
+    console.log('QR Code scanned:', decodedText)
+
+    if (scanMode === 'return') {
+      setScanResult({
+        success: true,
+        message: 'Container returned successfully! +10 points'
+      })
+      // Show return confirmation after a brief delay
+      setTimeout(() => {
+        setShowQRScanner(false)
+        setScanResult(null)
+        setShowReturnConfirmation(true)
+        setTimeout(() => setShowReturnConfirmation(false), 3000)
+      }, 1500)
+    } else {
+      setScanResult({
+        success: true,
+        message: 'Container checked out! Enjoy your meal.'
+      })
+      setTimeout(() => {
+        setShowQRScanner(false)
+        setScanResult(null)
+        addNotification({
+          type: 'achievement',
+          title: 'Container Checked Out',
+          message: 'Remember to return within 7 days!'
+        })
+      }, 1500)
+    }
+  }
+
   const simulateReturn = () => {
     setShowReturnConfirmation(true)
     setTimeout(() => setShowReturnConfirmation(false), 3000)
@@ -231,19 +274,22 @@ export default function DukeReuseApp() {
             <span>⚡</span> Quick Actions
           </h2>
           <div className="grid grid-cols-2 gap-3 lg:gap-4">
-            <button className="bg-blue-600 text-white p-4 lg:p-5 rounded-xl flex flex-col items-center gap-2 hover:bg-blue-700 transition active:scale-95">
-              <span className="text-2xl lg:text-3xl">📱</span>
-              <span className="font-medium">Mobile Order</span>
+            <button
+              onClick={() => openScanner('checkout')}
+              className="bg-blue-600 text-white p-4 lg:p-5 rounded-xl flex flex-col items-center gap-2 hover:bg-blue-700 transition active:scale-95"
+            >
+              <span className="text-2xl lg:text-3xl">📷</span>
+              <span className="font-medium">Scan Checkout</span>
             </button>
             <button className="bg-gray-100 text-gray-800 p-4 lg:p-5 rounded-xl flex flex-col items-center gap-2 hover:bg-gray-200 transition active:scale-95">
               <span className="text-2xl lg:text-3xl">📍</span>
               <span className="font-medium">Find Return Bin</span>
             </button>
             <button
-              onClick={simulateReturn}
+              onClick={() => openScanner('return')}
               className="bg-green-600 text-white p-4 lg:p-5 rounded-xl flex flex-col items-center gap-2 hover:bg-green-700 transition active:scale-95"
             >
-              <span className="text-2xl lg:text-3xl">✅</span>
+              <span className="text-2xl lg:text-3xl">📷</span>
               <span className="font-medium">Scan Return</span>
             </button>
             <button
@@ -652,6 +698,166 @@ export default function DukeReuseApp() {
     </AnimatePresence>
   )
 
+  // QR Scanner Modal
+  const QRScannerModal = () => {
+    const scannerRef = useRef<Html5Qrcode | null>(null)
+    const [isScanning, setIsScanning] = useState(false)
+    const [cameraError, setCameraError] = useState<string | null>(null)
+
+    useEffect(() => {
+      if (showQRScanner && !isScanning) {
+        startScanning()
+      }
+
+      return () => {
+        stopScanning()
+      }
+    }, [showQRScanner])
+
+    const startScanning = async () => {
+      try {
+        setCameraError(null)
+        const html5QrCode = new Html5Qrcode('qr-reader')
+        scannerRef.current = html5QrCode
+
+        await html5QrCode.start(
+          { facingMode: 'environment' },
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 }
+          },
+          (decodedText) => {
+            handleScanSuccess(decodedText)
+            stopScanning()
+          },
+          () => {
+            // Ignore scan errors (no QR found)
+          }
+        )
+        setIsScanning(true)
+      } catch (err) {
+        console.error('Error starting scanner:', err)
+        setCameraError('Unable to access camera. Please allow camera permissions or try the demo mode.')
+      }
+    }
+
+    const stopScanning = async () => {
+      if (scannerRef.current && isScanning) {
+        try {
+          await scannerRef.current.stop()
+          scannerRef.current = null
+          setIsScanning(false)
+        } catch (err) {
+          console.error('Error stopping scanner:', err)
+        }
+      }
+    }
+
+    const handleClose = () => {
+      stopScanning()
+      setShowQRScanner(false)
+      setScanResult(null)
+    }
+
+    const simulateScan = () => {
+      // Demo mode: simulate a successful scan
+      handleScanSuccess('DUKE-CONTAINER-' + Math.random().toString(36).substr(2, 9).toUpperCase())
+    }
+
+    return (
+      <AnimatePresence>
+        {showQRScanner && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 flex flex-col z-50"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 text-white">
+              <button onClick={handleClose} className="p-2 hover:bg-white/10 rounded-full">
+                <span className="text-2xl">✕</span>
+              </button>
+              <h2 className="text-lg font-semibold">
+                {scanMode === 'checkout' ? 'Scan to Checkout' : 'Scan to Return'}
+              </h2>
+              <div className="w-10"></div>
+            </div>
+
+            {/* Scanner Area */}
+            <div className="flex-1 flex flex-col items-center justify-center p-4">
+              {scanResult ? (
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="text-center"
+                >
+                  <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 ${scanResult.success ? 'bg-green-500' : 'bg-red-500'
+                    }`}>
+                    <span className="text-5xl">{scanResult.success ? '✓' : '✕'}</span>
+                  </div>
+                  <p className="text-white text-xl font-medium">{scanResult.message}</p>
+                </motion.div>
+              ) : (
+                <>
+                  <div className="relative w-full max-w-sm aspect-square bg-black rounded-2xl overflow-hidden mb-4">
+                    <div id="qr-reader" className="w-full h-full"></div>
+
+                    {/* Scanner Frame Overlay */}
+                    <div className="absolute inset-0 pointer-events-none">
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-64 h-64 border-2 border-white/50 rounded-lg relative">
+                          {/* Corner accents */}
+                          <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-blue-400 rounded-tl-lg"></div>
+                          <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-blue-400 rounded-tr-lg"></div>
+                          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-blue-400 rounded-bl-lg"></div>
+                          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-blue-400 rounded-br-lg"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Camera error overlay */}
+                    {cameraError && (
+                      <div className="absolute inset-0 bg-gray-900 flex items-center justify-center p-4">
+                        <div className="text-center">
+                          <span className="text-4xl mb-4 block">📷</span>
+                          <p className="text-white/70 text-sm">{cameraError}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-white/70 text-center mb-4">
+                    {scanMode === 'checkout'
+                      ? 'Point camera at the container QR code at the dining hall kiosk'
+                      : 'Point camera at the QR code on the return bin'}
+                  </p>
+
+                  {/* Demo/Manual Entry */}
+                  <button
+                    onClick={simulateScan}
+                    className="bg-white/10 text-white px-6 py-3 rounded-xl hover:bg-white/20 transition"
+                  >
+                    Demo: Simulate Scan
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* Bottom Info */}
+            <div className="p-4 pb-8 text-center">
+              <p className="text-white/50 text-sm">
+                {scanMode === 'checkout'
+                  ? 'Container will be checked out to your account'
+                  : 'Return your container to earn points'}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    )
+  }
+
   // Desktop Sidebar
   const DesktopSidebar = () => (
     <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:left-0 bg-blue-900 text-white">
@@ -762,6 +968,7 @@ export default function DukeReuseApp() {
       {/* Modals */}
       <NotificationsPanel />
       <ReturnConfirmation />
+      <QRScannerModal />
     </div>
   )
 }
